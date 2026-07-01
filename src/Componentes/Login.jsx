@@ -9,6 +9,7 @@ function Login({ setAdminActivo }) {
     const [rut, setRut] = useState('');
     const [mensaje, setMensaje] = useState('');
     const [usuarioLogueado, setUsuarioLogueado] = useState(null);
+    const [pedidos, setPedidos] = useState([]);
 
     const handleFormLogin = (e) => {
         e.preventDefault();

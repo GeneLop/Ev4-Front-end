@@ -47,6 +47,7 @@ function App() {
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
 
+
   // Estados del formulario de Checkout del Carrito
   const [verFormulario, setVerFormulario] = useState(false);
   const [deliveryChecked, setDeliveryChecked] = useState(false);
@@ -94,13 +95,17 @@ function App() {
       setInventarioProductos(JSON.parse(prodLocal));
       setCargandoAPI(false);
     } else {
-      fetch('https://api.myjson.online/v1/records/07bbebb1-cd09-4a22-b193-4d5d3f36b464')
+      fetch('https://api.jsonbin.io/v3/b/6a454d55da38895dfe1d4ead', {
+        headers: {
+          "X-Master-Key": "$2a$10$dtbHXH.TTbtOy9GTj/htG..S8up8iLy.kQLVWWu2VlaYh0PcdPmL6"
+        }
+      })
         .then(res => {
           if (!res.ok) throw new Error('Error de conexión con el servidor base de datos');
           return res.json();
         })
         .then(apiRes => {
-          const dataLimpia = apiRes.data || apiRes;
+          const dataLimpia = apiRes.record?.productos || apiRes.record || [];
           setInventarioProductos(dataLimpia);
           localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(dataLimpia));
           setCargandoAPI(false);
@@ -117,6 +122,7 @@ function App() {
     setRegistrosBase(nuevaLista);
     localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
   };
+
 
   const actualizarBDProductos = (nuevaLista) => {
     setInventarioProductos(nuevaLista);
@@ -252,11 +258,21 @@ function App() {
     try {
       await guardarPedidoEnBD(payloadPedido);
       alert(`🌌 ¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(deliveryChecked ? total + 2500 : total).toLocaleString('es-CL')}`);
-      setCarrito([]); setTotal(0); setVerFormulario(false); setRut(''); setFechaNacimiento(''); setDireccion(''); setDeliveryChecked(false);
+
+      setCarrito([]);
+      setTotal(0);
+      setVerFormulario(false);
+      setRut('');
+      setFechaNacimiento('');
+      setDireccion('');
+      setDeliveryChecked(false);
+
     } catch (error) {
-      alert('❌ Falla crítica en el servidor de base de datos.');
+      console.error(error);
+      alert(error.message);
     }
-  };
+
+  }; // <-- agrega esta línea
 
   const formatearPrecio = (precioPesos) => {
     if (monedaActiva === 'UF') return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
