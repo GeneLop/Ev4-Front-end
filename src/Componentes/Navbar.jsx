@@ -117,7 +117,7 @@ function Navbar({
                                     className="btn btn-sm btn-warning fw-bold text-uppercase px-3 text-dark"
                                     onClick={() => setAdminActivo(true)}
                                 >
-                                    🛡️ Servidor Central
+                                    Panel de administracion
                                 </button>
                             </li>
                         )}

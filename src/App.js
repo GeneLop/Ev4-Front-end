@@ -18,21 +18,17 @@ import Manual from './Paginas/Manual';
 import { validarRutChileno, verificarEdad, encriptarRut, guardarPedidoEnBD } from './funciones';
 
 function App() {
-  // ESTADO GLOBAL DE CONTROL DE ACCESO Y PANTALLAS DE CARGA
+  // CONTROL DE ACCESO Y PANTALLAS DE CARGA
   const [adminActivo, setAdminActivo] = useState(false);
   const [pestañaAdmin, setPestañaAdmin] = useState('usuarios');
   const [cargandoAPI, setCargandoAPI] = useState(true);
 
-  // ESTADOS GLOBALES DE DIVISAS
+  // DIVISAS
   const [monedaActiva, setMonedaActiva] = useState('CLP');
   const [valoresDivisas, setValoresDivisas] = useState({ uf: 1, eur: 1, utm: 1 });
 
-  // ESTADOS CRUD 1: USUARIOS (🌟 CORREGIDO: Ya no hay inputs para crear usuarios nuevos, solo para EDITAR)
+  // ESTADOS CRUD 1: USUARIOS (🌟 SIMPLIFICADO: Se eliminaron los estados de edición)
   const [registrosBase, setRegistrosBase] = useState([]);
-  const [idEditando, setIdEditando] = useState(null);
-  const [nombreInput, setNombreInput] = useState('');
-  const [rutInput, setRutInput] = useState('');
-  const [correoInput, setCorreoInput] = useState('');
 
   // ESTADOS CRUD 2: PRODUCTOS
   const [inventarioProductos, setInventarioProductos] = useState([]);
@@ -41,14 +37,16 @@ function App() {
   const [prodPrecio, setProdPrecio] = useState('');
   const [prodCategoria, setProdCategoria] = useState('telescopios');
   const [prodDescripcion, setProdDescripcion] = useState('');
-  const [prodImagen, setProdImagen] = useState(''); // 🌟 NUEVO: Estado para capturar el enlace de imagen (Opcional)
+  const [prodImagen, setProdImagen] = useState('');
 
-  // ESTADOS GLOBALES DEL CARRI
+  // HISTORIAL DE PEDIDOS DESDE MOCKAPI
+  const [historialPedidos, setHistorialPedidos] = useState([]);
+
+  // CARRITO DE COMPRAS
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
 
-
-  // Estados del formulario de Checkout del Carrito
+  // Formulario de Checkout
   const [verFormulario, setVerFormulario] = useState(false);
   const [deliveryChecked, setDeliveryChecked] = useState(false);
   const [direccion, setDireccion] = useState('');
@@ -56,7 +54,7 @@ function App() {
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [mensajeError, setMensajeError] = useState('');
 
-  // EFECTO 1: Consumo API de divisas
+  // Consumo API de divisas
   useEffect(() => {
     const obtenerDivisasRemotas = async () => {
       try {
@@ -74,9 +72,8 @@ function App() {
     obtenerDivisasRemotas();
   }, []);
 
-  // EFECTO 2: Carga asíncrona
+  // Carga asíncrona de usuarios y catálogo base
   useEffect(() => {
-    // Cargar Usuarios
     const bdLocal = localStorage.getItem('astroshop_bd_usuarios');
     if (bdLocal) {
       setRegistrosBase(JSON.parse(bdLocal));
@@ -89,7 +86,6 @@ function App() {
       localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(datosIniciales));
     }
 
-    // Cargar Catálogo de Productos
     const prodLocal = localStorage.getItem('astroshop_bd_productos_v4');
     if (prodLocal) {
       setInventarioProductos(JSON.parse(prodLocal));
@@ -117,31 +113,33 @@ function App() {
     }
   }, []);
 
+  // Sincroniza los pedidos desde MockAPI al entrar al panel
+  useEffect(() => {
+    if (adminActivo) {
+      fetch("https://6a455557aab3faec3f69d15d.mockapi.io/pedidos")
+        .then(res => {
+          if (!res.ok) throw new Error("Falla de lectura en MockAPI");
+          return res.json();
+        })
+        .then(datos => {
+          setHistorialPedidos(datos.reverse());
+        })
+        .catch(err => console.error("Error al recuperar bitácora de transacciones:", err));
+    }
+  }, [adminActivo, pestañaAdmin]);
+
   // Controladores de persistencia
   const actualizarBDUsuarios = (nuevaLista) => {
     setRegistrosBase(nuevaLista);
     localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
   };
 
-
   const actualizarBDProductos = (nuevaLista) => {
     setInventarioProductos(nuevaLista);
     localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(nuevaLista));
   };
 
-  // 🌟 CRUD USUARIOS CORREGIDO: Modificar datos de una cuenta existente de forma estricta (Sin creación manual)
-  const handleGuardarUsuario = (e) => {
-    e.preventDefault();
-    if (idEditando) {
-      const modificados = registrosBase.map(r => r.id === idEditando ? { ...r, nombre: nombreInput, rut: rutInput, correo: correoInput } : r);
-      actualizarBDUsuarios(modificados);
-      setIdEditando(null);
-      alert("✨ Transacción: Información del usuario actualizada con éxito.");
-      setNombreInput(''); setRutInput(''); setCorreoInput('');
-    }
-  };
-
-  // CRUD USUARIOS: Alternar estado de la cuenta (Soft Delete / Desactivación)
+  // Alternar estado de la cuenta (Soft Delete de usuarios activo/desactivado)
   const handleAlternarEstadoUsuario = (id) => {
     const modificados = registrosBase.map(user => {
       if (user.id === id) {
@@ -152,12 +150,9 @@ function App() {
     actualizarBDUsuarios(modificados);
   };
 
-  // 🌟 CRUD PRODUCTOS CORREGIDO: Tratamiento de imagen opcional e inteligente
   const handleGuardarProducto = (e) => {
     e.preventDefault();
     const precioNumerico = parseInt(prodPrecio) || 0;
-
-    // Si el admin no provee una URL de imagen válida, le inyectamos una hermosa foto espacial por defecto
     const urlImagenFinal = prodImagen.trim() !== ''
       ? prodImagen.trim()
       : "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400&auto=format&fit=crop";
@@ -170,7 +165,7 @@ function App() {
       );
       actualizarBDProductos(modificados);
       setIdProdEditando(null);
-      alert("✨ Transacción: Catálogo actualizado.");
+      alert("Catálogo actualizado.");
     } else {
       const nuevo = {
         id: Date.now(),
@@ -181,7 +176,7 @@ function App() {
         imagen: urlImagenFinal
       };
       actualizarBDProductos([...inventarioProductos, nuevo]);
-      alert("🚀 Transacción: Nuevo producto inyectado al catálogo.");
+      alert("Nuevo producto añadido al catálogo.");
     }
     setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen('');
   };
@@ -223,17 +218,17 @@ function App() {
   };
 
   // Lógica de finalización de compra
-  const grabarPedido = async () => {
+  const grabarPedido = async (datosClienteDesdeCarrito) => {
     setMensajeError('');
 
     if (!validarRutChileno(rut)) {
-      setMensajeError('El identificador fiscal (RUT) ingresado no cumple con el algoritmo Módulo 11.');
+      setMensajeError('El RUT ingresado no cumple con el algoritmo Módulo 11.');
       return;
     }
 
     const edadCalculada = verificarEdad(fechaNacimiento);
     if (edadCalculada < 18) {
-      setMensajeError('Regulación de Seguridad: Debe ser mayor de 18 años.');
+      setMensajeError('Debe ser mayor de 18 años para realizar una compra.');
       return;
     }
 
@@ -245,6 +240,9 @@ function App() {
     const rutProtegido = encriptarRut(rut);
 
     const payloadPedido = {
+      comprador_nombre: datosClienteDesdeCarrito.nombreCompleto,
+      comprador_correo: datosClienteDesdeCarrito.correo,
+      comprador_telefono: datosClienteDesdeCarrito.telefono,
       comprador_rut_aes: rutProtegido,
       edad_comprador: edadCalculada,
       requiere_despacho: deliveryChecked,
@@ -257,7 +255,7 @@ function App() {
 
     try {
       await guardarPedidoEnBD(payloadPedido);
-      alert(`🌌 ¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(deliveryChecked ? total + 2500 : total).toLocaleString('es-CL')}`);
+      alert(`¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(deliveryChecked ? total + 2500 : total).toLocaleString('es-CL')}`);
 
       setCarrito([]);
       setTotal(0);
@@ -271,8 +269,7 @@ function App() {
       console.error(error);
       alert(error.message);
     }
-
-  }; // <-- agrega esta línea
+  };
 
   const formatearPrecio = (precioPesos) => {
     if (monedaActiva === 'UF') return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
@@ -288,8 +285,8 @@ function App() {
       <div className="d-flex justify-content-center align-items-center vh-100 bg-dark text-info">
         <div className="text-center">
           <div className="spinner-border text-info mb-3" role="status" style={{ width: '3rem', height: '3rem' }}></div>
-          <h5 className="text-uppercase fw-bold text-white mb-0" style={{ letterSpacing: '1.5px', fontSize: '0.9rem' }}>
-            Sincronizando Base de Datos Remota...
+          <h5 className="text-uppercase fw-bold text-white mb-0" style={{ letterSpacing: '1px', fontSize: '0.85rem' }}>
+            Cargando catálogo...
           </h5>
         </div>
       </div>
@@ -324,72 +321,48 @@ function App() {
 
         {adminActivo ? (
           <div className="bg-dark text-white flex-grow-1 p-5">
-            <div className="container mt-4 bg-secondary bg-opacity-10 p-5 rounded border border-secondary shadow-lg">
+            <div className="container mt-4 bg-secondary bg-opacity-10 p-5 rounded border border-secondary shadow-sm">
 
               {/* Encabezado del Panel */}
               <div className="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
                 <div>
-                  <h2 className="text-info text-uppercase fw-bold h3 m-0">🛡️ Servidor Central Centralizado</h2>
-                  <p className="text-white small m-0">Entorno de Control Real para Modelos de Datos Activos</p>
+                  <h2 className="text-info text-uppercase fw-bold h4 m-0">Panel de Administración</h2>
+                  <p className="text-white-50 small m-0">Control de inventario, usuarios y registro de ventas</p>
                 </div>
-                <button className="btn btn-sm btn-outline-light px-3 fw-bold" onClick={() => setAdminActivo(false)}>
-                  ↩️ Volver a la Tienda
+                <button className="btn btn-sm btn-outline-light px-3 fw-bold text-uppercase" style={{ fontSize: '11px' }} onClick={() => setAdminActivo(false)}>
+                  Volver a la Tienda
                 </button>
               </div>
 
-              {/* Botonera de cambio de clase */}
+              {/* Botonera de pestañas */}
               <div className="btn-group mb-4" role="group">
-                <button className={`btn ${pestañaAdmin === 'usuarios' ? 'btn-info text-dark fw-bold' : 'btn-outline-info'}`} onClick={() => setPestañaAdmin('usuarios')}>
-                  Gestión de Cuentas de Usuarios
+                <button className={`btn btn-sm ${pestañaAdmin === 'usuarios' ? 'btn-info text-dark fw-bold' : 'btn-outline-info'}`} onClick={() => setPestañaAdmin('usuarios')}>
+                  Cuentas
                 </button>
-                <button className={`btn ${pestañaAdmin === 'productos' ? 'btn-info text-dark fw-bold' : 'btn-outline-info'}`} onClick={() => setPestañaAdmin('productos')}>
-                  Gestión de Inventario de Productos
+                <button className={`btn btn-sm ${pestañaAdmin === 'productos' ? 'btn-info text-dark fw-bold' : 'btn-outline-info'}`} onClick={() => setPestañaAdmin('productos')}>
+                  Productos
+                </button>
+                <button className={`btn btn-sm ${pestañaAdmin === 'pedidos' ? 'btn-info text-dark fw-bold' : 'btn-outline-info'}`} onClick={() => setPestañaAdmin('pedidos')}>
+                  Historial de Pedidos
                 </button>
               </div>
 
-              {/* 🌟 PESTAÑA 1 CORREGIDA: SOLO PERMITE EDITAR O ALTERNAR ESTADOS (Cumple Rúbrica Avanzada) */}
+              {/* 🌟 PESTAÑA 1 LIMPIA: SE ELIMINÓ EL FORMULARIO DE EDICIÓN TOTALMENTE */}
               {pestañaAdmin === 'usuarios' && (
-                <div className="row g-5">
-                  <div className="col-md-4 border-end border-secondary">
-                    <h4 className="h5 text-warning text-uppercase fw-bold mb-4">
-                      {idEditando ? '✏️ Editar Datos de Cuenta' : 'ℹ️ Seleccione un Usuario'}
-                    </h4>
-                    {idEditando ? (
-                      <form onSubmit={handleGuardarUsuario}>
-                        <div className="mb-3">
-                          <label className="form-label text-white small">Nombre Completo:</label>
-                          <input type="text" className="form-control bg-dark text-white border-secondary" value={nombreInput} onChange={e => setNombreInput(e.target.value)} required />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label text-white small">RUT:</label>
-                          <input type="text" className="form-control bg-dark text-white border-secondary" value={rutInput} onChange={e => setRutInput(e.target.value)} required />
-                        </div>
-                        <div className="mb-4">
-                          <label className="form-label text-white small">Correo Electrónico:</label>
-                          <input type="email" className="form-control bg-dark text-white border-secondary" value={correoInput} onChange={e => setCorreoInput(e.target.value)} required />
-                        </div>
-                        <div className="d-flex gap-2">
-                          <button type="submit" className="btn btn-warning text-dark fw-bold text-uppercase w-50">Guardar</button>
-                          <button type="button" className="btn btn-outline-light w-50" onClick={() => { setIdEditando(null); setNombreInput(''); setRutInput(''); setCorreoInput(''); }}>Cancelar</button>
-                        </div>
-                      </form>
-                    ) : (
-                      <p className="text-white-50 small bg-dark p-3 rounded border border-secondary border-opacity-25">
-                        Por motivos de seguridad e integridad del historial comercial, las cuentas de usuarios no se crean manualmente ni se eliminan. Use los controles de la tabla para <strong>Editar</strong> datos o <strong>Desactivar (Soft Delete)</strong> el acceso al sistema.
-                      </p>
-                    )}
-                  </div>
-                  <div className="col-md-8">
-                    <h4 className="h5 text-warning text-uppercase fw-bold mb-4">Cuentas Ingresadas</h4>
+                <div className="row">
+                  <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <h4 className="h5 text-warning text-uppercase fw-bold m-0">Cuentas Registradas en el Sistema</h4>
+                    </div>
                     <div className="table-responsive">
                       <table className="table table-dark table-striped align-middle m-0" style={{ fontSize: '0.85rem' }}>
                         <thead>
                           <tr className="text-white border-bottom border-secondary">
                             <th>RUT</th>
-                            <th>Nombre</th>
-                            <th>Correo</th>
+                            <th>Nombre de Usuario</th>
+                            <th>Correo Electrónico</th>
                             <th>Estado Operativo</th>
-                            <th className="text-center">Acciones</th>
+                            <th className="text-center" style={{ width: '150px' }}>Acción</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -397,17 +370,20 @@ function App() {
                             <tr key={reg.id}>
                               <td className="text-warning font-monospace fw-semibold">{reg.rut}</td>
                               <td className="text-white fw-medium">{reg.nombre}</td>
-                              <td className="text-white">{reg.correo}</td>
+                              <td className="text-white-50">{reg.correo}</td>
                               <td>
                                 <span className={`badge ${reg.estado === 'activo' ? 'bg-success' : 'bg-danger'} text-white text-uppercase`} style={{ fontSize: '10px' }}>
-                                  {reg.estado === 'activo' ? 'Funcionando' : 'No Funciona'}
+                                  {reg.estado === 'activo' ? 'Permitido' : 'Suspendido'}
                                 </span>
                               </td>
                               <td className="text-center">
-                                <button className={`btn btn-xs ${reg.estado === 'activo' ? 'btn-outline-danger' : 'btn-outline-success'} py-1 px-2 me-2`} style={{ fontSize: '11px' }} onClick={() => handleAlternarEstadoUsuario(reg.id)}>
-                                  {reg.estado === 'activo' ? 'Desactivar' : 'Activar'}
+                                <button
+                                  className={`btn btn-xs w-100 ${reg.estado === 'activo' ? 'btn-outline-danger' : 'btn-success text-white'} py-1 px-2`}
+                                  style={{ fontSize: '11px', fontWeight: '500' }}
+                                  onClick={() => handleAlternarEstadoUsuario(reg.id)}
+                                >
+                                  {reg.estado === 'activo' ? 'Deshanilitar' : 'Habilitar'}
                                 </button>
-                                <button className="btn btn-sm btn-warning py-1 px-2" style={{ fontSize: '11px' }} onClick={() => { setIdEditando(reg.id); setNombreInput(reg.nombre); setRutInput(reg.rut); setCorreoInput(reg.correo); }}>Editar</button>
                               </td>
                             </tr>
                           ))}
@@ -418,7 +394,7 @@ function App() {
                 </div>
               )}
 
-              {/* PESTAÑA 2: CRUD DE PRODUCTOS (🌟 IMAGEN OPCIONAL) */}
+              {/* PESTAÑA 2: GESTIÓN DE PRODUCTOS */}
               {pestañaAdmin === 'productos' && (
                 <div className="row g-5">
                   <div className="col-md-4 border-end border-secondary">
@@ -435,7 +411,7 @@ function App() {
                         <input type="number" className="form-control bg-dark text-white border-secondary" value={prodPrecio} onChange={e => setProdPrecio(e.target.value)} required />
                       </div>
                       <div className="mb-3">
-                        <label className="form-label text-white small">Categoría de Destino:</label>
+                        <label className="form-label text-white small">Categoría:</label>
                         <select className="form-select bg-dark text-white border-secondary" value={prodCategoria} onChange={e => setProdCategoria(e.target.value)}>
                           <option value="telescopios">Telescopios</option>
                           <option value="cursos">Cursos Virtuales</option>
@@ -443,15 +419,15 @@ function App() {
                         </select>
                       </div>
                       <div className="mb-3">
-                        <label className="form-label text-white small">URL de la Imagen <span className="text-muted text-lowercase font-monospace">(opcional)</span>:</label>
-                        <input type="text" className="form-control bg-dark text-white border-secondary" placeholder="https://enlace-de-foto.com/imagen.jpg" value={prodImagen} onChange={e => setProdImagen(e.target.value)} />
+                        <label className="form-label text-white small">URL de la Imagen (Opcional):</label>
+                        <input type="text" className="form-control bg-dark text-white border-secondary" placeholder="https://..." value={prodImagen} onChange={e => setProdImagen(e.target.value)} />
                       </div>
                       <div className="mb-4">
-                        <label className="form-label text-white small">Descripción Comercial:</label>
-                        <textarea className="form-control bg-dark text-white border-secondary" rows="2" placeholder="Detalles técnicos y características..." value={prodDescripcion} onChange={e => setProdDescripcion(e.target.value)}></textarea>
+                        <label className="form-label text-white small">Descripción del Producto:</label>
+                        <textarea className="form-control bg-dark text-white border-secondary" rows="2" placeholder="Detalles..." value={prodDescripcion} onChange={e => setProdDescripcion(e.target.value)}></textarea>
                       </div>
                       <button type="submit" className={`btn w-100 fw-bold text-uppercase py-2 ${idProdEditando ? 'btn-warning text-dark' : 'btn-info text-dark'}`} style={{ fontSize: '12px' }}>
-                        {idProdEditando ? 'Actualizar Artículo' : 'Inyectar Producto'}
+                        {idProdEditando ? 'Actualizar Artículo' : 'Añadir Producto'}
                       </button>
                     </form>
                   </div>
@@ -484,6 +460,68 @@ function App() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PESTAÑA 3: HISTORIAL DE PEDIDOS */}
+              {pestañaAdmin === 'pedidos' && (
+                <div className="row">
+                  <div className="col-12">
+                    <h4 className="h5 text-warning text-uppercase fw-bold mb-4">Registro de Ventas</h4>
+                    {historialPedidos.length === 0 ? (
+                      <p className="text-white-50 bg-dark p-4 rounded text-center small border border-secondary border-opacity-25">
+                        No se registran transacciones almacenadas en el servidor.
+                      </p>
+                    ) : (
+                      <div className="table-responsive" style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                        <table className="table table-dark table-striped align-middle m-0" style={{ fontSize: '0.8rem' }}>
+                          <thead>
+                            <tr className="text-white border-bottom border-secondary">
+                              <th>N° Orden</th>
+                              <th>Fecha</th>
+                              <th>Cliente / Contacto</th>
+                              <th>RUT</th>
+                              <th>Artículos</th>
+                              <th>Destino de Entrega</th>
+                              <th className="text-end">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {historialPedidos.map((pedido) => (
+                              <tr key={pedido.id}>
+                                <td className="text-info font-monospace fw-bold">#{pedido.id}</td>
+                                <td className="text-white-50">{pedido.fecha_registro ? pedido.fecha_registro.split('T')[0] : 'S/F'}</td>
+                                <td>
+                                  <div className="text-white fw-medium">{pedido.comprador_nombre || 'Cliente General'}</div>
+                                  <div className="text-info small">{pedido.comprador_correo || 'Sin correo'}</div>
+                                  <div className="text-white-50 small" style={{ fontSize: '11px' }}>{pedido.comprador_telefono || 'Sin teléfono'}</div>
+                                </td>
+                                <td className="font-monospace text-white-50 small text-truncate" style={{ maxWidth: '120px' }} title={pedido.comprador_rut_aes}>
+                                  {pedido.comprador_rut_aes}
+                                </td>
+                                <td>
+                                  {pedido.artículos_comprados && pedido.artículos_comprados.map((art, idx) => (
+                                    <div key={idx} className="small text-white-50">
+                                      <span className="text-warning fw-semibold">{art.cantidad}x</span> {art.nombre}
+                                    </div>
+                                  ))}
+                                </td>
+                                <td className="small text-white-50" style={{ maxWidth: '200px' }}>
+                                  <span className={`badge ${pedido.requiere_despacho ? 'bg-primary' : 'bg-secondary'} text-white d-inline-block mb-1`} style={{ fontSize: '9px' }}>
+                                    {pedido.requiere_despacho ? 'Despacho' : 'Retiro'}
+                                  </span>
+                                  <div className="text-white text-wrap">{pedido.domicilio_entrega}</div>
+                                </td>
+                                <td className="text-success fw-bold text-end fs-6">
+                                  ${Number(pedido.monto_total_pagado || 0).toLocaleString('es-CL')}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

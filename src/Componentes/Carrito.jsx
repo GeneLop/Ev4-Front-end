@@ -127,7 +127,8 @@ function Carrito({
         e.preventDefault();
         if (formularioValido) {
             window.puntosDeEstaCompra = puntosEspaciales;
-            onFinalizar();
+            // 🌟 PASAMOS EL NOMBRE Y APELLIDO JUNTO CON LA ORDEN HACIA APP.JSX
+            onFinalizar(`${nombre.trim()} ${apellido.trim()}`);
         }
     };
 
@@ -142,7 +143,6 @@ function Carrito({
                 <p className="text-center text-white my-4 small">Carrito vacío.</p>
             ) : (
                 <div>
-                    {/* Lista de productos compacta */}
                     <div className="mb-3">
                         {carrito.map(item => (
                             <div key={item.id} className="d-flex justify-content-between align-items-center bg-secondary bg-opacity-10 p-2 mb-2 rounded border border-secondary" style={{ fontSize: '0.85rem' }}>
@@ -160,7 +160,6 @@ function Carrito({
                         ))}
                     </div>
 
-                    {/* VISTA INICIAL */}
                     {!verFormulario ? (
                         <div className="pt-2">
                             <div className="d-flex justify-content-between align-items-center px-1 mb-3" style={{ fontSize: '1rem' }}>
@@ -172,7 +171,6 @@ function Carrito({
                             </button>
                         </div>
                     ) : (
-                        /* VISTA DE FORMULARIO */
                         <form onSubmit={handleCheckoutFinal} className="p-3 bg-secondary bg-opacity-10 rounded border border-secondary" style={{ fontSize: '0.8rem' }}>
 
                             <div className="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-3">
@@ -182,7 +180,6 @@ function Carrito({
                                 </button>
                             </div>
 
-                            {/* Nombre y Apellido */}
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Nombre:</label>
@@ -194,14 +191,12 @@ function Carrito({
                                 </div>
                             </div>
 
-                            {/* RUT */}
                             <div className="mb-2">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
                                 <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="12.345.678-9" value={rut} onChange={handleRutChange} required />
                                 {errorRut && rut !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorRut}</small>}
                             </div>
 
-                            {/* Correo y Teléfono */}
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
@@ -226,14 +221,12 @@ function Carrito({
                                 </div>
                             </div>
 
-                            {/* Fecha de Nacimiento */}
                             <div className="mb-3">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Fecha de Nacimiento:</label>
                                 <input type="date" className="form-control form-control-sm bg-dark text-white border-secondary" min={fechaMinima} max={fechaHoy} value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} required />
                                 {errorEdad && fechaNacimiento !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorEdad}</small>}
                             </div>
 
-                            {/* Modalidad de Entrega */}
                             <div className="mb-3">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Modalidad de Entrega:</label>
                                 <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={(e) => setMetodoEntrega(e.target.value)}>
@@ -242,7 +235,6 @@ function Carrito({
                                 </select>
                             </div>
 
-                            {/* Dirección condicional */}
                             {metodoEntrega === 'despacho' && (
                                 <div className="mb-3 p-2 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-50">
                                     <div className="row g-2 mb-2">
@@ -269,7 +261,6 @@ function Carrito({
                                 </div>
                             )}
 
-                            {/* Casilla de Términos */}
                             <div className="form-check mb-3">
                                 <input className="form-check-input" type="checkbox" id="terms" checked={aceptaTerminos} onChange={e => setAceptaTerminos(e.target.checked)} required />
                                 <label className="form-check-label text-white" htmlFor="terms" style={{ fontSize: '11px', userSelect: 'none' }}>
@@ -277,7 +268,6 @@ function Carrito({
                                 </label>
                             </div>
 
-                            {/* Desglose completo final */}
                             <div className="bg-dark bg-opacity-50 p-3 rounded border border-secondary mb-3" style={{ fontSize: '0.8rem' }}>
                                 <div className="d-flex justify-content-between mb-1">
                                     <span className="text-white">Subtotal Neto:</span>
