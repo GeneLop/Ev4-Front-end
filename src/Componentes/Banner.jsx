@@ -18,8 +18,8 @@ function Banner() {
                     style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
                     Explora el <span className="text-info">Universo</span>
                 </h1>
-                <p className="lead fw-normal my-4"
-                    style={{ fontSize: '1.2rem', fontWeight: '500', textShadow: '1px 1px 4px rgba(0, 0, 0, 0.6)' }}>
+                <p className="lead my-4"
+                    style={{ fontSize: '1.2rem', fontWeight: '700', textShadow: '1px 1px 4px rgba(0, 0, 0, 0.6)' }}>
                     Equipamiento astronómico de alta gama, capacitaciones certificadas y recursos interactivos de exploración científica escolar y profesional.
                 </p>
                 <a className="btn btn-info text-dark btn-lg fw-bold text-uppercase px-4 shadow" href="#carta-productos">

@@ -1,6 +1,7 @@
 // src/Componentes/Navbar.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+
 import Carrito from './Carrito';
 import Login from './Login';
 
@@ -23,14 +24,27 @@ function Navbar({
     mensajeError,
     onFinalizar,
     setAdminActivo,
-    monedaActiva,       // 🌟 Recibimos la moneda activa desde App.jsx
-    setMonedaActiva     // 🌟 Recibimos el setter desde App.jsx
+    monedaActiva,
+    setMonedaActiva
 }) {
+    const [sesionAdminIniciada, setSesionAdminIniciada] = useState(false);
+
+    const handleLoginExitoso = (exito) => {
+        setSesionAdminIniciada(exito);
+    };
+
+    // 🌟 CORREGIDO: Cuando esté activo brilla en celeste info, cuando no, queda en blanco puro (text-white)
+    const estiloEnlace = ({ isActive }) =>
+        isActive
+            ? "nav-link text-info fw-bold border-bottom border-info"
+            : "nav-link text-white fw-medium";
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top">
             <div className="container">
+                {/* Logo Principal */}
                 <Link className="navbar-brand fw-bold text-uppercase d-flex align-items-center" to="/">
-                    <span className="text-info me-2"></span> AstroShop
+                    AstroShop
                 </Link>
 
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -39,14 +53,27 @@ function Navbar({
 
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto align-items-center">
-                        <li className="nav-item"><Link className="nav-link text-white-50" to="/">Inicio</Link></li>
-                        <li className="nav-item"><Link className="nav-link text-white-50" to="/nosotros">Nosotros</Link></li>
-                        <li className="nav-item"><Link className="nav-link text-white-50" to="/proyecto">Proyecto</Link></li>
-                        <li className="nav-item"><Link className="nav-link text-white-50" to="/contacto">Contacto</Link></li>
-                        <li className="nav-item"><Link className="nav-link text-white-50" to="/terminos">Términos</Link></li>
-                        <li className="nav-item"><Link className="nav-link text-white-50" to="/manual">Manual</Link></li>
+                        {/* Enlaces de navegación con letras blancas puras por defecto */}
+                        <li className="nav-item">
+                            <NavLink className={estiloEnlace} to="/">Inicio</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={estiloEnlace} to="/nosotros">Nosotros</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={estiloEnlace} to="/proyecto">Proyecto</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={estiloEnlace} to="/contacto">Contacto</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={estiloEnlace} to="/terminos">Términos</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={estiloEnlace} to="/manual">Manual</NavLink>
+                        </li>
 
-                        {/* 🌟 SELECTOR DE DIVISAS INTEGRADO DE FORMA INSTITUCIONAL */}
+                        {/* SELECTOR DE DIVISAS */}
                         <li className="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
                             <button
                                 className="btn btn-outline-info btn-sm dropdown-toggle fw-bold text-uppercase px-3"
@@ -78,9 +105,22 @@ function Navbar({
                                 Mi Cuenta
                             </button>
                             <div className="dropdown-menu dropdown-menu-end p-0 border-0 shadow-lg mt-2" aria-labelledby="dropdownLogin" style={{ width: '440px', zIndex: 1060 }}>
-                                <Login setAdminActivo={setAdminActivo} />
+                                <Login setAdminActivo={handleLoginExitoso} />
                             </div>
                         </li>
+
+                        {/* BOTÓN DEL PANEL ADMIN CONDICIONADO */}
+                        {sesionAdminIniciada && (
+                            <li className="nav-item ms-lg-2 mt-2 mt-lg-0">
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-warning fw-bold text-uppercase px-3 text-dark"
+                                    onClick={() => setAdminActivo(true)}
+                                >
+                                    🛡️ Servidor Central
+                                </button>
+                            </li>
+                        )}
 
                         {/* DROPDOWN DEL CARRITO DE COMPRAS */}
                         <li className="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">

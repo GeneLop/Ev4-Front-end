@@ -71,7 +71,7 @@ function Contacto() {
                 {/* COLUMNA 1: FORMULARIO DE ENTRADA DE DATOS */}
                 <div className="col-lg-5">
                     <div className="p-4 rounded-4 h-100 shadow-lg" style={{ backgroundColor: '#1a1d20', borderLeft: '4px solid #0dcaf0' }}>
-                        <h3 className="h5 text-white text-uppercase fw-bold mb-4" style={{ letterSpacing: '0.5px' }}>Formulario de Requerimiento</h3>
+                        <h3 className="h5 text-white text-uppercase fw-bold mb-4" style={{ letterSpacing: '0.5px' }}>Contacto</h3>
 
                         <form onSubmit={handleEnviar}>
                             <div className="mb-3">
@@ -137,11 +137,11 @@ function Contacto() {
                     <div className="p-4 rounded-4 shadow-lg" style={{ backgroundColor: '#1a1d20', borderLeft: '4px solid #0dcaf0' }}>
                         <div className="row g-3">
                             <div className="col-sm-6">
-                                <div className="text-warning text-uppercase fw-bold mb-1" style={{ fontSize: '11px', letterSpacing: '1px' }}>Teléfono de Soporte</div>
+                                <div className="text-warning text-uppercase fw-bold mb-1" style={{ fontSize: '11px', letterSpacing: '1px' }}>Teléfono</div>
                                 <div className="text-white fw-bold font-monospace fs-5">+56 61 220 4000</div>
                             </div>
                             <div className="col-sm-6 border-start border-secondary border-opacity-25 ps-sm-4">
-                                <div className="text-warning text-uppercase fw-bold mb-1" style={{ fontSize: '11px', letterSpacing: '1px' }}>Oficina Central</div>
+                                <div className="text-warning text-uppercase fw-bold mb-1" style={{ fontSize: '11px', letterSpacing: '1px' }}>Ubicación</div>
                                 <div className="text-white small fw-semibold font-monospace">Av. España 1230, Punta Arenas</div>
                             </div>
                         </div>

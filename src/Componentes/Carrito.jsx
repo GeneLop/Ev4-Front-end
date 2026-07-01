@@ -1,6 +1,6 @@
 // src/Componentes/Carrito.jsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // 🌟 Importamos Link para la navegación
+import { Link } from 'react-router-dom';
 import { validarRutChileno, verificarEdad } from '../funciones';
 
 function Carrito({
@@ -135,11 +135,11 @@ function Carrito({
         <div className="p-4 bg-dark text-white rounded border border-secondary shadow-lg" style={{ width: '550px', maxHeight: '580px', overflowY: 'auto' }}>
             <h5 className="text-warning text-uppercase fw-bold border-bottom border-secondary pb-2 mb-3 d-flex justify-content-between align-items-center" style={{ fontSize: '1.1rem' }}>
                 <span>Mi Carrito</span>
-                <span className="text-white-50 small fw-normal" style={{ fontSize: '0.8rem' }}>({carrito.length} ítems)</span>
+                <span className="text-white small fw-normal" style={{ fontSize: '0.8rem' }}>({carrito.length} ítems)</span>
             </h5>
 
             {carrito.length === 0 ? (
-                <p className="text-center text-white-50 my-4 small">Carrito vacío.</p>
+                <p className="text-center text-white my-4 small">Carrito vacío.</p>
             ) : (
                 <div>
                     {/* Lista de productos compacta */}
@@ -160,15 +160,15 @@ function Carrito({
                         ))}
                     </div>
 
-                    {/* VISTA INICIAL (🌟 CORREGIDO: Chau recuadro feo, ahora es texto suelto y elegante) */}
+                    {/* VISTA INICIAL */}
                     {!verFormulario ? (
                         <div className="pt-2">
                             <div className="d-flex justify-content-between align-items-center px-1 mb-3" style={{ fontSize: '1rem' }}>
-                                <span className="text-white-50 fw-light">Total parcial:</span>
+                                <span className="text-white fw-light">Total parcial:</span>
                                 <span className="text-info fw-bold fs-5" style={{ letterSpacing: '0.5px' }}>${total.toLocaleString('es-CL')}</span>
                             </div>
                             <button type="button" className="btn btn-warning w-100 fw-bold py-2 text-uppercase" style={{ fontSize: '0.85rem', letterSpacing: '0.5px' }} onClick={() => setVerFormulario(true)}>
-                                Confirmar carrito
+                                Proceder al Pago
                             </button>
                         </div>
                     ) : (
@@ -185,18 +185,18 @@ function Carrito({
                             {/* Nombre y Apellido */}
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
-                                    <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Nombre:</label>
+                                    <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Nombre:</label>
                                     <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Juan" value={nombre} onChange={e => handleTextoLimpio(e, setNombre)} required />
                                 </div>
                                 <div className="col-6">
-                                    <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Apellido:</label>
+                                    <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Apellido:</label>
                                     <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Pérez" value={apellido} onChange={e => handleTextoLimpio(e, setApellido)} required />
                                 </div>
                             </div>
 
                             {/* RUT */}
                             <div className="mb-2">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
                                 <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="12.345.678-9" value={rut} onChange={handleRutChange} required />
                                 {errorRut && rut !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorRut}</small>}
                             </div>
@@ -204,14 +204,14 @@ function Carrito({
                             {/* Correo y Teléfono */}
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
-                                    <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
+                                    <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
                                     <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="juan@correo.cl" value={correoLocal} onChange={e => setCorreoLocal(e.target.value)} required />
                                     {errorCorreo && correoLocal !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorCorreo}</small>}
                                 </div>
                                 <div className="col-6">
-                                    <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Teléfono Móvil:</label>
+                                    <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Teléfono Móvil:</label>
                                     <div className="input-group input-group-sm">
-                                        <span className="input-group-text bg-dark border-secondary text-white-50" style={{ fontSize: '12px' }}>+56 9</span>
+                                        <span className="input-group-text bg-dark border-secondary text-white" style={{ fontSize: '12px' }}>+56 9</span>
                                         <input
                                             type="tel"
                                             className="form-control bg-dark text-white border-secondary"
@@ -228,14 +228,14 @@ function Carrito({
 
                             {/* Fecha de Nacimiento */}
                             <div className="mb-3">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Fecha de Nacimiento:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Fecha de Nacimiento:</label>
                                 <input type="date" className="form-control form-control-sm bg-dark text-white border-secondary" min={fechaMinima} max={fechaHoy} value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} required />
                                 {errorEdad && fechaNacimiento !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorEdad}</small>}
                             </div>
 
                             {/* Modalidad de Entrega */}
                             <div className="mb-3">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Modalidad de Entrega:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Modalidad de Entrega:</label>
                                 <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={(e) => setMetodoEntrega(e.target.value)}>
                                     <option value="retiro">Retiro en Tienda Local ($0)</option>
                                     <option value="despacho">Despacho a Domicilio</option>
@@ -247,15 +247,15 @@ function Carrito({
                                 <div className="mb-3 p-2 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-50">
                                     <div className="row g-2 mb-2">
                                         <div className="col-6">
-                                            <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Región de Destino:</label>
+                                            <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Región de Destino:</label>
                                             <select className="form-select form-select-sm bg-dark text-white border-secondary" value={regionSeleccionada} onChange={handleRegionChange}>
                                                 {Object.keys(regionesChile).map(reg => (
-                                                    <option key={reg} value={reg}>{reg === 'Magallanes' ? 'Magallanes' : `${reg}`}</option>
+                                                    <option key={reg} value={reg}>{reg === 'Magallanes' ? 'Magallanes (Envío Local)' : `${reg} (Otras Regiones)`}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className="col-6">
-                                            <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Comuna:</label>
+                                            <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Comuna:</label>
                                             <select className="form-select form-select-sm bg-dark text-white border-secondary" value={comunaSeleccionada} onChange={e => setComunaSeleccionada(e.target.value)}>
                                                 {regionesChile[regionSeleccionada].map(com => (
                                                     <option key={com} value={com}>{com}</option>
@@ -263,16 +263,16 @@ function Carrito({
                                             </select>
                                         </div>
                                     </div>
-                                    <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Dirección (Calle y Número):</label>
+                                    <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Dirección (Calle y Número):</label>
                                     <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Av. Alemania 450" value={calleNumero} onChange={e => setCalleNumero(e.target.value)} required={metodoEntrega === 'despacho'} />
                                     {errorDespacho && calleNumero !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorDespacho}</small>}
                                 </div>
                             )}
 
-                            {/* Casilla de Términos (🌟 CORREGIDO: Integrado el enlace real a /terminos) */}
+                            {/* Casilla de Términos */}
                             <div className="form-check mb-3">
                                 <input className="form-check-input" type="checkbox" id="terms" checked={aceptaTerminos} onChange={e => setAceptaTerminos(e.target.checked)} required />
-                                <label className="form-check-label text-white-50" htmlFor="terms" style={{ fontSize: '11px', userSelect: 'none' }}>
+                                <label className="form-check-label text-white" htmlFor="terms" style={{ fontSize: '11px', userSelect: 'none' }}>
                                     Acepto los <Link to="/terminos" className="text-info text-decoration-underline fw-medium">Términos y Condiciones</Link> de la tienda
                                 </label>
                             </div>
@@ -280,11 +280,11 @@ function Carrito({
                             {/* Desglose completo final */}
                             <div className="bg-dark bg-opacity-50 p-3 rounded border border-secondary mb-3" style={{ fontSize: '0.8rem' }}>
                                 <div className="d-flex justify-content-between mb-1">
-                                    <span className="text-white-50">Subtotal Neto:</span>
+                                    <span className="text-white">Subtotal Neto:</span>
                                     <span className="fw-semibold">${total.toLocaleString('es-CL')}</span>
                                 </div>
                                 <div className="d-flex justify-content-between mb-1">
-                                    <span className="text-white-50">Costo de Envío:</span>
+                                    <span className="text-white">Costo de Envío:</span>
                                     <span className="fw-semibold">${costoDespacho.toLocaleString('es-CL')}</span>
                                 </div>
                                 <div className="d-flex justify-content-between text-info fw-semibold mb-2 border-bottom border-secondary border-opacity-25 pb-2">

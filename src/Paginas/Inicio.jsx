@@ -37,7 +37,7 @@ function Inicio({
                         <div className="d-flex align-items-center justify-content-center text-white w-100"
                             style={{
                                 height: '400px',
-                                backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("/imagenes/week.jpg")',
+                                backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("/imagenes/semana.avif")',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 borderTop: '1px solid #0dcaf0'
