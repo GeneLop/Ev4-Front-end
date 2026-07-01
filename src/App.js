@@ -43,7 +43,7 @@ function App() {
   const [prodDescripcion, setProdDescripcion] = useState('');
   const [prodImagen, setProdImagen] = useState(''); // 🌟 NUEVO: Estado para capturar el enlace de imagen (Opcional)
 
-  // ESTADOS GLOBALES DEL CARRITO
+  // ESTADOS GLOBALES DEL CARRI
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
 
