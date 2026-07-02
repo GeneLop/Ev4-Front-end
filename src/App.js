@@ -13,8 +13,8 @@ import Contacto from './Paginas/Contacto';
 import Terminos from './Paginas/Terminos';
 import Manual from './Paginas/Manual';
 
-// Lógica Funcional Externa
-import { encriptarRut, guardarPedidoEnBD } from './funciones';
+// Lógica Funcional Externa (Aquí dejamos las funciones juntas y sin duplicar)
+import { validarRutChileno, verificarEdad, encriptarRut, guardarPedidoEnBD } from './funciones';
 
 // COMPONENTE MONITOR: Cierra el panel de administración al cambiar de página
 function MonitorDeRutas({ setAdminActivo }) {
@@ -66,6 +66,7 @@ function App() {
       try {
         const res = await fetch('https://mindicador.cl/api');
         const datos = await res.json();
+        console.log("Respuesta de la API de divisas cargada con éxito:", datos);
         setValoresDivisas({
           uf: datos.uf.valor,
           eur: datos.euro.valor,
@@ -105,6 +106,7 @@ function App() {
         .then(res => res.json())
         .then(apiRes => {
           const listaLimpia = apiRes.record?.productos || apiRes.record || [];
+          console.log("Catálogo original de JSONBin inyectado:", listaLimpia);
           setInventarioProductos(listaLimpia);
           localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(listaLimpia));
           setCargandoAPI(false);
@@ -121,7 +123,10 @@ function App() {
     if (adminActivo) {
       fetch("https://6a455557aab3faec3f69d15d.mockapi.io/pedidos")
         .then(res => res.json())
-        .then(datos => setHistorialPedidos(datos.reverse()))
+        .then(datos => {
+          console.log("Historial de pedidos MockAPI recuperado de la base de datos:", datos);
+          setHistorialPedidos(datos.reverse());
+        })
         .catch(err => console.error("Error al recuperar pedidos:", err));
     }
   }, [adminActivo, pestañaAdmin]);
@@ -163,7 +168,6 @@ function App() {
       : "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400&auto=format&fit=crop";
 
     if (idProdEditando) {
-      // Modificar existente
       const editados = inventarioProductos.map(p =>
         p.id === idProdEditando
           ? { ...p, nombre: prodNombre, precio: precioNum, categoria: prodCategoria, descripcion: prodDescripcion || p.descripcion, imagen: imagenUrl }
@@ -173,7 +177,6 @@ function App() {
       setIdProdEditando(null);
       alert("Catálogo actualizado con éxito.");
     } else {
-      // Insertar nuevo producto
       const nuevoProd = {
         id: Date.now(),
         nombre: prodNombre,
@@ -186,7 +189,6 @@ function App() {
       alert("Nuevo producto añadido con éxito.");
     }
 
-    // Limpiar campos del formulario del panel
     setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen(''); setProdCategoria('');
   };
 
@@ -226,14 +228,37 @@ function App() {
     }
   };
 
-  // Función tradicional para procesar el pedido final hacia la API remota
+  // Función para procesar el pedido final hacia la API remota
   const grabarPedido = async (datosCliente) => {
     setMensajeError('');
 
-    const costoEnvioFinal = deliveryChecked ? 2500 : 0;
-    const rutEncriptado = encriptarRut(rut);
+    // 🌟 BLOQUEO ALUMNO: Si la sesión de Administrador está activa, bloquea el checkout
+    if (adminActivo) {
+      alert("⚠️ Error del Sistema: Las cuentas de Administrador no están autorizadas para realizar compras en la tienda. Por favor use una cuenta de cliente.");
+      return;
+    }
 
-    // Creamos el JSON con los datos estructurados que nos llegaron del Carrito
+    // Doble validación de seguridad para bloquear el RUT de puros números repetidos
+    const rutParaVerificar = datosCliente.rutValidado || rut;
+    const rutLimpio = rutParaVerificar.replace(/[^0-9kK]/g, '');
+    const esRepetido = /^(.)\1+$/.test(rutLimpio.slice(0, -1));
+
+    if (esRepetido || rutParaVerificar === '') {
+      alert("El RUT ingresado no es válido o es un registro de prueba repetido.");
+      return;
+    }
+
+    // Doble chequeo del formato del correo electrónico
+    const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!regexCorreo.test(datosCliente.correo)) {
+      alert("El correo electrónico no tiene un formato válido.");
+      return;
+    }
+
+    const costoEnvioFinal = deliveryChecked ? 2500 : 0;
+    const rutEncriptado = encriptarRut(rutParaVerificar);
+
+    // Creamos el JSON con los datos validados
     const pedidoPayload = {
       comprador_nombre: datosCliente.nombreCompleto,
       comprador_correo: datosCliente.correo,
@@ -241,7 +266,9 @@ function App() {
       comprador_rut_aes: rutEncriptado,
       requiere_despacho: deliveryChecked,
       domicilio_entrega: direccion,
-      artículos_comprados: carrito.map(i => ({ id: i.id, nombre: i.nombre, cantidad: i.cantidad })),
+      artículos_comprados: carrito.map((i) => {
+        return { id: i.id, nombre: i.nombre, cantidad: i.cantidad };
+      }),
       monto_neto_transaccion: total,
       monto_total_pagado: total + costoEnvioFinal,
       fecha_registro: new Date().toISOString()
@@ -251,7 +278,6 @@ function App() {
       await guardarPedidoEnBD(pedidoPayload);
       alert(`¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(total + costoEnvioFinal).toLocaleString('es-CL')}`);
 
-      // Limpiar estados globales para vaciar el flujo
       setCarrito([]);
       setTotal(0);
       setVerFormulario(false);
@@ -265,7 +291,6 @@ function App() {
     }
   };
 
-  // Formateador simple de divisas en texto
   const formatearPrecio = (precioPesos) => {
     if (monedaActiva === 'UF') return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
     if (monedaActiva === 'EUR') return `€ ${(precioPesos / valoresDivisas.eur).toFixed(2)}`;
@@ -320,13 +345,11 @@ function App() {
           <div className="bg-dark text-white flex-grow-1 p-5">
             <div className="container mt-4 bg-secondary bg-opacity-10 p-5 rounded border border-secondary shadow-sm">
 
-              {/* Encabezado del Panel */}
               <div className="border-bottom border-secondary pb-3 mb-4">
                 <h2 className="text-info text-uppercase fw-bold h4 m-0">Panel de Administración</h2>
                 <p className="text-white-50 small m-0">Control de inventario, usuarios y registro de ventas</p>
               </div>
 
-              {/* Botonera de pestañas */}
               <div className="btn-group mb-4" role="group">
                 <button className={`btn btn-sm ${pestañaAdmin === 'usuarios' ? 'btn-info text-dark fw-bold' : 'btn-outline-info'}`} onClick={() => setPestañaAdmin('usuarios')}>
                   Cuentas
@@ -339,7 +362,6 @@ function App() {
                 </button>
               </div>
 
-              {/* PESTAÑA 1: TABLA DE CUENTAS */}
               {pestañaAdmin === 'usuarios' && (
                 <div className="row">
                   <div className="col-12">
@@ -388,7 +410,6 @@ function App() {
                 </div>
               )}
 
-              {/* PESTAÑA 2: GESTIÓN DE PRODUCTOS */}
               {pestañaAdmin === 'productos' && (
                 <div className="row g-5">
                   <div className="col-md-4 border-end border-secondary">
@@ -467,7 +488,6 @@ function App() {
                 </div>
               )}
 
-              {/* PESTAÑA 3: HISTORIAL DE PEDIDOS */}
               {pestañaAdmin === 'pedidos' && (
                 <div className="row">
                   <div className="col-12">
@@ -536,9 +556,15 @@ function App() {
             <Routes>
               <Route path="/" element={
                 <Inicio
-                  productosTelescopios={inventarioProductos.filter(p => p.categoria === 'telescopios')}
-                  productosCursos={inventarioProductos.filter(p => p.categoria === 'cursos')}
-                  productosExperiencias={inventarioProductos.filter(p => p.categoria === 'experiencias')}
+                  productosTelescopios={inventarioProductos.filter((p) => {
+                    return p.categoria === 'telescopios';
+                  })}
+                  productosCursos={inventarioProductos.filter((p) => {
+                    return p.categoria === 'cursos';
+                  })}
+                  productosExperiencias={inventarioProductos.filter((p) => {
+                    return p.categoria === 'experiencias';
+                  })}
                   agregarProducto={agregarProducto}
                   formatearPrecio={formatearPrecio}
                 />
