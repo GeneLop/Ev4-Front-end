@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // Importación de Componentes Globales
 import Navbar from './Componentes/Navbar';
@@ -17,6 +17,17 @@ import Manual from './Paginas/Manual';
 // Lógica Funcional Externa
 import { validarRutChileno, verificarEdad, encriptarRut, guardarPedidoEnBD } from './funciones';
 
+// COMPONENTE MONITOR: Apaga el panel automáticamente si el usuario navega por el sitio
+function MonitorDeRutas({ setAdminActivo }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    setAdminActivo(false);
+  }, [location, setAdminActivo]);
+
+  return null;
+}
+
 function App() {
   // CONTROL DE ACCESO Y PANTALLAS DE CARGA
   const [adminActivo, setAdminActivo] = useState(false);
@@ -27,7 +38,7 @@ function App() {
   const [monedaActiva, setMonedaActiva] = useState('CLP');
   const [valoresDivisas, setValoresDivisas] = useState({ uf: 1, eur: 1, utm: 1 });
 
-  // ESTADOS CRUD 1: USUARIOS (🌟 SIMPLIFICADO: Se eliminaron los estados de edición)
+  // ESTADOS CRUD 1: USUARIOS
   const [registrosBase, setRegistrosBase] = useState([]);
 
   // ESTADOS CRUD 2: PRODUCTOS
@@ -35,7 +46,7 @@ function App() {
   const [idProdEditando, setIdProdEditando] = useState(null);
   const [prodNombre, setProdNombre] = useState('');
   const [prodPrecio, setProdPrecio] = useState('');
-  const [prodCategoria, setProdCategoria] = useState('telescopios');
+  const [prodCategoria, setProdCategoria] = useState('');
   const [prodDescripcion, setProdDescripcion] = useState('');
   const [prodImagen, setProdImagen] = useState('');
 
@@ -76,11 +87,22 @@ function App() {
   useEffect(() => {
     const bdLocal = localStorage.getItem('astroshop_bd_usuarios');
     if (bdLocal) {
-      setRegistrosBase(JSON.parse(bdLocal));
+      const usuariosExistentes = JSON.parse(bdLocal).map((u, index) => {
+        if (!u.passwordEncriptada) {
+          return {
+            ...u,
+            passwordEncriptada: index % 2 === 0
+              ? "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK"
+              : "$2a$12$X9vW2zQ1mN82P7bT5eO4jK3bH2gM"
+          };
+        }
+        return u;
+      });
+      setRegistrosBase(usuariosExistentes);
     } else {
       const datosIniciales = [
-        { id: "1", nombre: "James Hewstone", rut: "12.345.678-9", correo: "j.hewstone@profesor.cl", estado: "activo" },
-        { id: "2", nombre: "Antonia Astrea", rut: "20.441.302-K", correo: "antonia@explorador.cl", estado: "activo" }
+        { id: "1", nombre: "James Hewstone", rut: "12.345.678-9", correo: "j.hewstone@profesor.cl", estado: "activo", passwordEncriptada: "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK" },
+        { id: "2", nombre: "Antonia Astrea", rut: "20.441.302-K", correo: "antonia@explorador.cl", estado: "activo", passwordEncriptada: "$2a$12$X9vW2zQ1mN82P7bT5eO4jK3bH2gM" }
       ];
       setRegistrosBase(datosIniciales);
       localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(datosIniciales));
@@ -150,8 +172,23 @@ function App() {
     actualizarBDUsuarios(modificados);
   };
 
+  const handleCancelarEdicion = () => {
+    setIdProdEditando(null);
+    setProdNombre('');
+    setProdPrecio('');
+    setProdCategoria('');
+    setProdDescripcion('');
+    setProdImagen('');
+  };
+
   const handleGuardarProducto = (e) => {
     e.preventDefault();
+
+    if (!prodCategoria) {
+      alert("Por favor, seleccione una categoría válida.");
+      return;
+    }
+
     const precioNumerico = parseInt(prodPrecio) || 0;
     const urlImagenFinal = prodImagen.trim() !== ''
       ? prodImagen.trim()
@@ -178,7 +215,7 @@ function App() {
       actualizarBDProductos([...inventarioProductos, nuevo]);
       alert("Nuevo producto añadido al catálogo.");
     }
-    setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen('');
+    setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen(''); setProdCategoria('');
   };
 
   // Funciones del carrito
@@ -272,10 +309,13 @@ function App() {
   };
 
   const formatearPrecio = (precioPesos) => {
+    // Para las otras divisas mantenemos los decimales porque sí los usan
     if (monedaActiva === 'UF') return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
     if (monedaActiva === 'EUR') return `€ ${(precioPesos / valoresDivisas.eur).toFixed(2)}`;
     if (monedaActiva === 'UTM') return `${(precioPesos / valoresDivisas.utm).toFixed(2)} UTM`;
-    return `$ ${(precioPesos).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+
+    // 🌟 CORREGIDO PARA CLP: Redondeamos al entero y formateamos con puntos estilo chileno real
+    return `$ ${Math.round(precioPesos).toLocaleString('es-CL')}`;
   };
 
   const cantidadTotalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
@@ -295,6 +335,8 @@ function App() {
 
   return (
     <Router>
+      <MonitorDeRutas setAdminActivo={setAdminActivo} />
+
       <div className="d-flex flex-column min-vh-screen bg-dark">
         <Navbar
           cantidadCarrito={cantidadTotalItems}
@@ -324,14 +366,9 @@ function App() {
             <div className="container mt-4 bg-secondary bg-opacity-10 p-5 rounded border border-secondary shadow-sm">
 
               {/* Encabezado del Panel */}
-              <div className="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
-                <div>
-                  <h2 className="text-info text-uppercase fw-bold h4 m-0">Panel de Administración</h2>
-                  <p className="text-white-50 small m-0">Control de inventario, usuarios y registro de ventas</p>
-                </div>
-                <button className="btn btn-sm btn-outline-light px-3 fw-bold text-uppercase" style={{ fontSize: '11px' }} onClick={() => setAdminActivo(false)}>
-                  Volver a la Tienda
-                </button>
+              <div className="border-bottom border-secondary pb-3 mb-4">
+                <h2 className="text-info text-uppercase fw-bold h4 m-0">Panel de Administración</h2>
+                <p className="text-white-50 small m-0">Control de inventario, usuarios y registro de ventas</p>
               </div>
 
               {/* Botonera de pestañas */}
@@ -347,7 +384,7 @@ function App() {
                 </button>
               </div>
 
-              {/* 🌟 PESTAÑA 1 LIMPIA: SE ELIMINÓ EL FORMULARIO DE EDICIÓN TOTALMENTE */}
+              {/* PESTAÑA 1: TABLA DE CUENTAS */}
               {pestañaAdmin === 'usuarios' && (
                 <div className="row">
                   <div className="col-12">
@@ -361,16 +398,33 @@ function App() {
                             <th>RUT</th>
                             <th>Nombre de Usuario</th>
                             <th>Correo Electrónico</th>
+                            <th>Hash Contraseña</th>
                             <th>Estado Operativo</th>
-                            <th className="text-center" style={{ width: '150px' }}>Acción</th>
+                            <th className="text-center" style={{ width: '150px' }}>Gestión</th>
                           </tr>
                         </thead>
                         <tbody>
                           {registrosBase.map(reg => (
                             <tr key={reg.id}>
-                              <td className="text-warning font-monospace fw-semibold">{reg.rut}</td>
+                              <td className="text-warning fw-semibold">
+                                {(() => {
+                                  let valor = reg.rut.replace(/\./g, '').replace(/-/g, '').trim().toUpperCase();
+                                  if (valor.length < 2) return reg.rut;
+                                  let cuerpo = valor.slice(0, -1);
+                                  let dv = valor.slice(-1);
+                                  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                  return `${cuerpo}-${dv}`;
+                                })()}
+                              </td>
                               <td className="text-white fw-medium">{reg.nombre}</td>
                               <td className="text-white-50">{reg.correo}</td>
+                              <td>
+                                <div className="p-2 rounded bg-black border border-secondary border-opacity-25 text-warning text-truncate font-monospace"
+                                  style={{ maxWidth: '180px', fontSize: '11px' }}
+                                  title={reg.passwordEncriptada}>
+                                  {reg.passwordEncriptada}
+                                </div>
+                              </td>
                               <td>
                                 <span className={`badge ${reg.estado === 'activo' ? 'bg-success' : 'bg-danger'} text-white text-uppercase`} style={{ fontSize: '10px' }}>
                                   {reg.estado === 'activo' ? 'Permitido' : 'Suspendido'}
@@ -382,7 +436,7 @@ function App() {
                                   style={{ fontSize: '11px', fontWeight: '500' }}
                                   onClick={() => handleAlternarEstadoUsuario(reg.id)}
                                 >
-                                  {reg.estado === 'activo' ? 'Deshanilitar' : 'Habilitar'}
+                                  {reg.estado === 'activo' ? 'Deshabilitar' : 'Habilitar'}
                                 </button>
                               </td>
                             </tr>
@@ -412,7 +466,8 @@ function App() {
                       </div>
                       <div className="mb-3">
                         <label className="form-label text-white small">Categoría:</label>
-                        <select className="form-select bg-dark text-white border-secondary" value={prodCategoria} onChange={e => setProdCategoria(e.target.value)}>
+                        <select className="form-select bg-dark text-white border-secondary" value={prodCategoria} onChange={e => setProdCategoria(e.target.value)} required>
+                          <option value="" disabled>-- Seleccione una categoría --</option>
                           <option value="telescopios">Telescopios</option>
                           <option value="cursos">Cursos Virtuales</option>
                           <option value="experiencias">Kits & Ciencia</option>
@@ -426,9 +481,17 @@ function App() {
                         <label className="form-label text-white small">Descripción del Producto:</label>
                         <textarea className="form-control bg-dark text-white border-secondary" rows="2" placeholder="Detalles..." value={prodDescripcion} onChange={e => setProdDescripcion(e.target.value)}></textarea>
                       </div>
-                      <button type="submit" className={`btn w-100 fw-bold text-uppercase py-2 ${idProdEditando ? 'btn-warning text-dark' : 'btn-info text-dark'}`} style={{ fontSize: '12px' }}>
-                        {idProdEditando ? 'Actualizar Artículo' : 'Añadir Producto'}
-                      </button>
+
+                      <div className="d-flex gap-2">
+                        <button type="submit" className={`btn flex-grow-1 fw-bold text-uppercase py-2 ${idProdEditando ? 'btn-warning text-dark' : 'btn-info text-dark'}`} style={{ fontSize: '12px' }}>
+                          {idProdEditando ? 'Actualizar' : 'Añadir Producto'}
+                        </button>
+                        {idProdEditando && (
+                          <button type="button" className="btn btn-outline-secondary fw-bold text-uppercase py-2 px-3 text-white" style={{ fontSize: '12px' }} onClick={handleCancelarEdicion}>
+                            Cancelar
+                          </button>
+                        )}
+                      </div>
                     </form>
                   </div>
                   <div className="col-md-8">

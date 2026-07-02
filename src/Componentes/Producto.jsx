@@ -2,25 +2,24 @@
 import React from 'react';
 
 function Producto({ p, onAgregar, formatearPrecio }) {
-    // Detectamos si el producto pertenece a la categoría de telescopios
-    const esTelescopio = p.categoria === 'telescopios';
-
-    // Calculamos el precio antiguo (un 30% más alto)
-    const precioAntes = Math.round(p.precio * 1.3);
+    // El precio digitado en el panel es el precio original.
+    // El precio Cyber real de oferta se calcula restándole un 30% de descuento.
+    const precioOriginal = p.precio;
+    const precioOfertaCyber = Math.round(p.precio * 0.7);
 
     return (
         <div className="col-md-4 mb-4">
             <div className="card bg-dark border-secondary h-100 text-white shadow-sm overflow-hidden">
 
-                {/* Contenedor de la imagen */}
+                {/* 🌟 CORREGIDO: Contenedor con fondo negro puro (bg-black) para ocultar bordes feos */}
                 <div
-                    className={`text-center d-flex align-items-center justify-content-center ${esTelescopio ? 'bg-white p-2' : 'bg-secondary bg-opacity-10'
-                        }`}
+                    className="text-center d-flex align-items-center justify-content-center bg-black"
                     style={{ height: '220px', width: '100%' }}
                 >
+                    {/* 🌟 CORREGIDO: object-fit-cover para que cualquier imagen por defecto llene el espacio de forma limpia */}
                     <img
                         src={p.imagen}
-                        className={`w-100 h-100 ${esTelescopio ? 'object-fit-contain' : 'object-fit-cover'}`}
+                        className="w-100 h-100 object-fit-cover"
                         alt={p.nombre}
                     />
                 </div>
@@ -29,20 +28,20 @@ function Producto({ p, onAgregar, formatearPrecio }) {
                     <div>
                         <h5 className="card-title h6 text-info fw-bold text-uppercase">{p.nombre}</h5>
 
-                        {/* SECCIÓN DE PRECIOS DEL MISMO TAMAÑO Y MÁXIMA VISIBILIDAD */}
+                        {/* SECCIÓN DE PRECIOS */}
                         <div className="d-flex align-items-center gap-2 my-2 flex-wrap">
 
-                            {/* PRECIO ANTIGUO: En blanco semitransparente para que sea legible en fondo oscuro */}
+                            {/* PRECIO ORIGINAL (ANTES) */}
                             <span className="text-white-50 text-decoration-line-through fw-semibold" style={{ letterSpacing: '0.5px' }}>
-                                {formatearPrecio(precioAntes)}
+                                {formatearPrecio(precioOriginal)}
                             </span>
 
-                            {/* PRECIO NUEVO: Mismo tamaño que el anterior, respetando tu estilo amarillo original */}
+                            {/* PRECIO NUEVO DE OFERTA (AHORA) */}
                             <p className="text-warning fw-semibold m-0" style={{ letterSpacing: '0.5px' }}>
-                                {formatearPrecio(p.precio)}
+                                {formatearPrecio(precioOfertaCyber)}
                             </p>
 
-                            {/* Insignia Cyber discreta */}
+                            {/* Insignia Cyber */}
                             <span className="badge bg-danger bg-opacity-75 font-monospace" style={{ fontSize: '9px', padding: '3px 5px' }}>
                                 CYBER
                             </span>
@@ -56,7 +55,7 @@ function Producto({ p, onAgregar, formatearPrecio }) {
                     <button
                         type="button"
                         className="btn btn-sm btn-outline-info w-100 fw-bold text-uppercase mt-3"
-                        onClick={() => onAgregar(p)}
+                        onClick={() => onAgregar({ ...p, precio: precioOfertaCyber })}
                     >
                         Añadir al carrito
                     </button>
