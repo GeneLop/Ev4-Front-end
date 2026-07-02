@@ -1,4 +1,3 @@
-// src/Componentes/Carrito.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { validarRutChileno, verificarEdad } from '../funciones';
@@ -20,6 +19,7 @@ function Carrito({
     setFechaNacimiento,
     onFinalizar
 }) {
+    // Estados estándar para los campos del formulario
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [correoLocal, setCorreoLocal] = useState('');
@@ -30,14 +30,15 @@ function Carrito({
     const [comunaSeleccionada, setComunaSeleccionada] = useState('Punta Arenas');
     const [calleNumero, setCalleNumero] = useState('');
 
+    // Estados para guardar los mensajes de error
     const [errorRut, setErrorRut] = useState('');
     const [errorEdad, setErrorEdad] = useState('');
     const [errorCorreo, setErrorCorreo] = useState('');
     const [errorTelefono, setErrorTelefono] = useState('');
     const [errorDespacho, setErrorDespacho] = useState('');
-    const [formularioValido, setFormularioValido] = useState(false);
     const [puntosEspaciales, setPuntosEspaciales] = useState(0);
 
+    // Calcular costo de despacho de forma simple y directa
     const costoDespacho = metodoEntrega === 'despacho'
         ? (regionSeleccionada === 'Magallanes' ? 2500 : 15000)
         : 0;
@@ -49,24 +50,27 @@ function Carrito({
         "Biobío": ["Concepción", "Talcahuano", "San Pedro de la Paz", "Chillán"]
     };
 
+    // Calcular puntos (1%) de forma tradicional
     useEffect(() => {
         setPuntosEspaciales(Math.floor(total * 0.01));
     }, [total]);
 
-    useEffect(() => {
-        setDeliveryChecked(metodoEntrega === 'despacho');
-    }, [metodoEntrega, setDeliveryChecked]);
-
+    // Formateador de RUT simple y legible paso a paso
     const handleRutChange = (e) => {
         let valor = e.target.value.replace(/[^0-9kK]/g, '');
         if (valor.length > 9) valor = valor.slice(0, 9);
+
         let rutFormateado = "";
         if (valor.length > 1) {
             const dv = valor.slice(-1);
             const cuerpo = valor.slice(0, -1);
-            if (cuerpo.length <= 3) rutFormateado = `${cuerpo}-${dv}`;
-            else if (cuerpo.length <= 6) rutFormateado = `${cuerpo.slice(0, -3)}.${cuerpo.slice(-3)}-${dv}`;
-            else rutFormateado = `${cuerpo.slice(0, -6)}.${cuerpo.slice(-6, -3)}.${cuerpo.slice(-3)}-${dv}`;
+            if (cuerpo.length <= 3) {
+                rutFormateado = cuerpo + "-" + dv;
+            } else if (cuerpo.length <= 6) {
+                rutFormateado = cuerpo.slice(0, -3) + "." + cuerpo.slice(-3) + "-" + dv;
+            } else {
+                rutFormateado = cuerpo.slice(0, -6) + "." + cuerpo.slice(-6, -3) + "." + cuerpo.slice(-3) + "-" + dv;
+            }
         } else {
             rutFormateado = valor;
         }
@@ -83,54 +87,87 @@ function Carrito({
         setTelefonoDigitos(valor);
     };
 
-    const fechaHoy = new Date().toISOString().split('T')[0];
-    const anioMinimo = new Date().getFullYear() - 120;
-    const fechaMinima = `${anioMinimo}-01-01`;
-
     const handleRegionChange = (e) => {
         const reg = e.target.value;
         setRegionSeleccionada(reg);
         setComunaSeleccionada(regionesChile[reg][0]);
     };
 
-    useEffect(() => {
-        if (!verFormulario) return;
-        let esValido = true;
+    // Capturar cambios en la modalidad de entrega de forma manual
+    const handleMetodoEntregaChange = (e) => {
+        const opcion = e.target.value;
+        setMetodoEntrega(opcion);
+        setDeliveryChecked(opcion === 'despacho');
+    };
 
-        if (!nombre.trim() || !apellido.trim() || !aceptaTerminos) esValido = false;
+    // Función de validación tradicional al enviar el formulario
+    const handleCheckoutFinal = (e) => {
+        e.preventDefault();
 
-        if (!rut.trim() || !validarRutChileno(rut)) { setErrorRut('RUT inválido'); esValido = false; }
-        else { setErrorRut(''); }
+        let errores = false;
 
+        // Validar RUT
+        if (!validarRutChileno(rut)) {
+            setErrorRut('RUT inválido');
+            errores = true;
+        } else {
+            setErrorRut('');
+        }
+
+        // Validar Correo
         const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regexCorreo.test(correoLocal)) { setErrorCorreo('Correo inválido'); esValido = false; }
-        else { setErrorCorreo(''); }
+        if (!regexCorreo.test(correoLocal)) {
+            setErrorCorreo('Correo inválido');
+            errores = true;
+        } else {
+            setErrorCorreo('');
+        }
 
-        if (telefonoDigitos.length !== 8) { setErrorTelefono('Debes ingresar los 8 dígitos restantes'); esValido = false; }
-        else { setErrorTelefono(''); }
+        // Validar Teléfono (8 dígitos)
+        if (telefonoDigitos.length !== 8) {
+            setErrorTelefono('Debes ingresar los 8 dígitos restantes');
+            errores = true;
+        } else {
+            setErrorTelefono('');
+        }
 
-        if (!fechaNacimiento || verificarEdad(fechaNacimiento) < 18) { setErrorEdad('Debe ser mayor de 18 años'); esValido = false; }
-        else { setErrorEdad(''); }
+        // Validar Edad (+18)
+        if (!fechaNacimiento || verificarEdad(fechaNacimiento) < 18) {
+            setErrorEdad('Debe ser mayor de 18 años');
+            errores = true;
+        } else {
+            setErrorEdad('');
+        }
 
+        // Validar y armar Dirección
         if (metodoEntrega === 'despacho') {
-            if (!calleNumero.trim()) { setErrorDespacho('Dirección requerida'); esValido = false; }
-            else { setErrorDespacho(''); setDireccion(`${calleNumero}, ${comunaSeleccionada}, ${regionSeleccionada}`); }
+            if (!calleNumero.trim()) {
+                setErrorDespacho('Dirección requerida');
+                errores = true;
+            } else {
+                setErrorDespacho('');
+                setDireccion(`${calleNumero}, ${comunaSeleccionada}, ${regionSeleccionada}`);
+            }
         } else {
             setErrorDespacho('');
             setDireccion('Retiro en Oficina Central');
         }
 
-        setFormularioValido(esValido);
-    }, [nombre, apellido, rut, correoLocal, telefonoDigitos, fechaNacimiento, metodoEntrega, calleNumero, regionSeleccionada, comunaSeleccionada, aceptaTerminos, verFormulario, setDireccion]);
-
-    const handleCheckoutFinal = (e) => {
-        e.preventDefault();
-        if (formularioValido) {
+        // Si no hay errores, se ejecuta la compra enviando los datos organizados
+        if (!errores && aceptaTerminos) {
             window.puntosDeEstaCompra = puntosEspaciales;
-            // 🌟 PASAMOS EL NOMBRE Y APELLIDO JUNTO CON LA ORDEN HACIA APP.JSX
-            onFinalizar(`${nombre.trim()} ${apellido.trim()}`);
+
+            // Enviamos el objeto con los datos recolectados al componente padre
+            onFinalizar({
+                nombreCompleto: `${nombre.trim()} ${apellido.trim()}`,
+                correo: correoLocal,
+                telefono: "+56 9 " + telefonoDigitos
+            });
         }
     };
+
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    const fechaMinima = `${new Date().getFullYear() - 120}-01-01`;
 
     return (
         <div className="p-4 bg-dark text-white rounded border border-secondary shadow-lg" style={{ width: '550px', maxHeight: '580px', overflowY: 'auto' }}>
@@ -194,42 +231,34 @@ function Carrito({
                             <div className="mb-2">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
                                 <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="12.345.678-9" value={rut} onChange={handleRutChange} required />
-                                {errorRut && rut !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorRut}</small>}
+                                {errorRut && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorRut}</small>}
                             </div>
 
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
                                     <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="juan@correo.cl" value={correoLocal} onChange={e => setCorreoLocal(e.target.value)} required />
-                                    {errorCorreo && correoLocal !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorCorreo}</small>}
+                                    {errorCorreo && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorCorreo}</small>}
                                 </div>
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Teléfono Móvil:</label>
                                     <div className="input-group input-group-sm">
                                         <span className="input-group-text bg-dark border-secondary text-white" style={{ fontSize: '12px' }}>+56 9</span>
-                                        <input
-                                            type="tel"
-                                            className="form-control bg-dark text-white border-secondary"
-                                            placeholder="12345678"
-                                            value={telefonoDigitos}
-                                            onChange={handleTelefonoChange}
-                                            maxLength="8"
-                                            required
-                                        />
+                                        <input type="tel" className="form-control bg-dark text-white border-secondary" placeholder="12345678" value={telefonoDigitos} onChange={handleTelefonoChange} maxLength="8" required />
                                     </div>
-                                    {errorTelefono && telefonoDigitos !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorTelefono}</small>}
+                                    {errorTelefono && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorTelefono}</small>}
                                 </div>
                             </div>
 
                             <div className="mb-3">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Fecha de Nacimiento:</label>
                                 <input type="date" className="form-control form-control-sm bg-dark text-white border-secondary" min={fechaMinima} max={fechaHoy} value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} required />
-                                {errorEdad && fechaNacimiento !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorEdad}</small>}
+                                {errorEdad && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorEdad}</small>}
                             </div>
 
                             <div className="mb-3">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Modalidad de Entrega:</label>
-                                <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={(e) => setMetodoEntrega(e.target.value)}>
+                                <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={handleMetodoEntregaChange}>
                                     <option value="retiro">Retiro en Tienda Local ($0)</option>
                                     <option value="despacho">Despacho a Domicilio</option>
                                 </select>
@@ -257,7 +286,7 @@ function Carrito({
                                     </div>
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Dirección (Calle y Número):</label>
                                     <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Av. Alemania 450" value={calleNumero} onChange={e => setCalleNumero(e.target.value)} required={metodoEntrega === 'despacho'} />
-                                    {errorDespacho && calleNumero !== '' && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorDespacho}</small>}
+                                    {errorDespacho && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorDespacho}</small>}
                                 </div>
                             )}
 
@@ -287,7 +316,7 @@ function Carrito({
                                 </div>
                             </div>
 
-                            <button type="submit" className={`btn btn-sm w-100 fw-bold text-uppercase py-2 ${formularioValido ? 'btn-info text-dark' : 'btn-secondary text-muted'}`} style={{ fontSize: '12px', letterSpacing: '0.5px' }} disabled={!formularioValido}>
+                            <button type="submit" className="btn btn-sm w-100 fw-bold text-uppercase py-2 btn-info text-dark" style={{ fontSize: '12px', letterSpacing: '0.5px' }}>
                                 Confirmar Compra
                             </button>
                         </form>

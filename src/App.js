@@ -1,6 +1,5 @@
-// src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // Importación de Componentes Globales
 import Navbar from './Componentes/Navbar';
@@ -15,34 +14,32 @@ import Terminos from './Paginas/Terminos';
 import Manual from './Paginas/Manual';
 
 // Lógica Funcional Externa
-import { validarRutChileno, verificarEdad, encriptarRut, guardarPedidoEnBD } from './funciones';
+import { encriptarRut, guardarPedidoEnBD } from './funciones';
 
-// COMPONENTE MONITOR: Apaga el panel automáticamente si el usuario navega por el sitio
+// COMPONENTE MONITOR: Cierra el panel de administración al cambiar de página
 function MonitorDeRutas({ setAdminActivo }) {
   const location = useLocation();
-
   useEffect(() => {
     setAdminActivo(false);
   }, [location, setAdminActivo]);
-
   return null;
 }
 
 function App() {
-  // CONTROL DE ACCESO Y PANTALLAS DE CARGA
+  // Estados de control general
   const [adminActivo, setAdminActivo] = useState(false);
   const [pestañaAdmin, setPestañaAdmin] = useState('usuarios');
   const [cargandoAPI, setCargandoAPI] = useState(true);
 
-  // DIVISAS
+  // Estados de Monedas
   const [monedaActiva, setMonedaActiva] = useState('CLP');
   const [valoresDivisas, setValoresDivisas] = useState({ uf: 1, eur: 1, utm: 1 });
 
-  // ESTADOS CRUD 1: USUARIOS
+  // Estados del CRUD
   const [registrosBase, setRegistrosBase] = useState([]);
-
-  // ESTADOS CRUD 2: PRODUCTOS
   const [inventarioProductos, setInventarioProductos] = useState([]);
+
+  // Estados para controlar el formulario de edición de productos
   const [idProdEditando, setIdProdEditando] = useState(null);
   const [prodNombre, setProdNombre] = useState('');
   const [prodPrecio, setProdPrecio] = useState('');
@@ -50,14 +47,12 @@ function App() {
   const [prodDescripcion, setProdDescripcion] = useState('');
   const [prodImagen, setProdImagen] = useState('');
 
-  // HISTORIAL DE PEDIDOS DESDE MOCKAPI
+  // Historial de pedidos cargados de la API
   const [historialPedidos, setHistorialPedidos] = useState([]);
 
-  // CARRITO DE COMPRAS
+  // Estados compartidos del Carrito de Compras
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
-
-  // Formulario de Checkout
   const [verFormulario, setVerFormulario] = useState(false);
   const [deliveryChecked, setDeliveryChecked] = useState(false);
   const [direccion, setDireccion] = useState('');
@@ -65,120 +60,93 @@ function App() {
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [mensajeError, setMensajeError] = useState('');
 
-  // Consumo API de divisas
+  // 1. Obtener valores de divisas actuales desde la API
   useEffect(() => {
-    const obtenerDivisasRemotas = async () => {
+    const obtenerDivisas = async () => {
       try {
-        const respuesta = await fetch('https://mindicador.cl/api');
-        const datos = await respuesta.json();
+        const res = await fetch('https://mindicador.cl/api');
+        const datos = await res.json();
         setValoresDivisas({
           uf: datos.uf.valor,
           eur: datos.euro.valor,
           utm: datos.utm.valor
         });
-      } catch (error) {
-        console.error("Falla de sincronización externa con la API de divisas:", error);
+      } catch (err) {
+        console.error("Error al cargar divisas:", err);
       }
     };
-    obtenerDivisasRemotas();
+    obtenerDivisas();
   }, []);
 
-  // Carga asíncrona de usuarios y catálogo base
+  // 2. Cargar datos iniciales de Usuarios y Catálogo de Productos
   useEffect(() => {
+    // Carga de usuarios locales
     const bdLocal = localStorage.getItem('astroshop_bd_usuarios');
     if (bdLocal) {
-      const usuariosExistentes = JSON.parse(bdLocal).map((u, index) => {
-        if (!u.passwordEncriptada) {
-          return {
-            ...u,
-            passwordEncriptada: index % 2 === 0
-              ? "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK"
-              : "$2a$12$X9vW2zQ1mN82P7bT5eO4jK3bH2gM"
-          };
-        }
-        return u;
-      });
-      setRegistrosBase(usuariosExistentes);
+      setRegistrosBase(JSON.parse(bdLocal));
     } else {
-      const datosIniciales = [
+      const usuariosIniciales = [
         { id: "1", nombre: "James Hewstone", rut: "12.345.678-9", correo: "j.hewstone@profesor.cl", estado: "activo", passwordEncriptada: "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK" },
         { id: "2", nombre: "Antonia Astrea", rut: "20.441.302-K", correo: "antonia@explorador.cl", estado: "activo", passwordEncriptada: "$2a$12$X9vW2zQ1mN82P7bT5eO4jK3bH2gM" }
       ];
-      setRegistrosBase(datosIniciales);
-      localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(datosIniciales));
+      setRegistrosBase(usuariosIniciales);
+      localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(usuariosIniciales));
     }
 
+    // Carga de productos
     const prodLocal = localStorage.getItem('astroshop_bd_productos_v4');
     if (prodLocal) {
       setInventarioProductos(JSON.parse(prodLocal));
       setCargandoAPI(false);
     } else {
       fetch('https://api.jsonbin.io/v3/b/6a454d55da38895dfe1d4ead', {
-        headers: {
-          "X-Master-Key": "$2a$10$dtbHXH.TTbtOy9GTj/htG..S8up8iLy.kQLVWWu2VlaYh0PcdPmL6"
-        }
+        headers: { "X-Master-Key": "$2a$10$dtbHXH.TTbtOy9GTj/htG..S8up8iLy.kQLVWWu2VlaYh0PcdPmL6" }
       })
-        .then(res => {
-          if (!res.ok) throw new Error('Error de conexión con el servidor base de datos');
-          return res.json();
-        })
+        .then(res => res.json())
         .then(apiRes => {
-          const dataLimpia = apiRes.record?.productos || apiRes.record || [];
-          setInventarioProductos(dataLimpia);
-          localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(dataLimpia));
+          const listaLimpia = apiRes.record?.productos || apiRes.record || [];
+          setInventarioProductos(listaLimpia);
+          localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(listaLimpia));
           setCargandoAPI(false);
         })
         .catch(err => {
-          console.error("Error al inyectar catálogo remoto:", err);
+          console.error("Error al cargar catálogo remoto:", err);
           setCargandoAPI(false);
         });
     }
   }, []);
 
-  // Sincroniza los pedidos desde MockAPI al entrar al panel
+  // 3. Sincronizar pedidos de MockAPI al abrir esa sección del panel
   useEffect(() => {
     if (adminActivo) {
       fetch("https://6a455557aab3faec3f69d15d.mockapi.io/pedidos")
-        .then(res => {
-          if (!res.ok) throw new Error("Falla de lectura en MockAPI");
-          return res.json();
-        })
-        .then(datos => {
-          setHistorialPedidos(datos.reverse());
-        })
-        .catch(err => console.error("Error al recuperar bitácora de transacciones:", err));
+        .then(res => res.json())
+        .then(datos => setHistorialPedidos(datos.reverse()))
+        .catch(err => console.error("Error al recuperar pedidos:", err));
     }
   }, [adminActivo, pestañaAdmin]);
 
-  // Controladores de persistencia
-  const actualizarBDUsuarios = (nuevaLista) => {
+  // Funciones auxiliares para guardar cambios en LocalStorage
+  const guardarUsuariosLocal = (nuevaLista) => {
     setRegistrosBase(nuevaLista);
     localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
   };
 
-  const actualizarBDProductos = (nuevaLista) => {
+  const guardarProductosLocal = (nuevaLista) => {
     setInventarioProductos(nuevaLista);
     localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(nuevaLista));
   };
 
-  // Alternar estado de la cuenta (Soft Delete de usuarios activo/desactivado)
   const handleAlternarEstadoUsuario = (id) => {
-    const modificados = registrosBase.map(user => {
-      if (user.id === id) {
-        return { ...user, estado: user.estado === 'activo' ? 'inactivo' : 'activo' };
-      }
-      return user;
-    });
-    actualizarBDUsuarios(modificados);
+    const actualizados = registrosBase.map(u =>
+      u.id === id ? { ...u, estado: u.estado === 'activo' ? 'inactivo' : 'activo' } : u
+    );
+    guardarUsuariosLocal(actualizados);
   };
 
   const handleCancelarEdicion = () => {
     setIdProdEditando(null);
-    setProdNombre('');
-    setProdPrecio('');
-    setProdCategoria('');
-    setProdDescripcion('');
-    setProdImagen('');
+    setProdNombre(''); setProdPrecio(''); setProdCategoria(''); setProdDescripcion(''); setProdImagen('');
   };
 
   const handleGuardarProducto = (e) => {
@@ -189,41 +157,45 @@ function App() {
       return;
     }
 
-    const precioNumerico = parseInt(prodPrecio) || 0;
-    const urlImagenFinal = prodImagen.trim() !== ''
+    const precioNum = parseInt(prodPrecio) || 0;
+    const imagenUrl = prodImagen.trim() !== ''
       ? prodImagen.trim()
       : "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400&auto=format&fit=crop";
 
     if (idProdEditando) {
-      const modificados = inventarioProductos.map(p =>
+      // Modificar existente
+      const editados = inventarioProductos.map(p =>
         p.id === idProdEditando
-          ? { ...p, nombre: prodNombre, precio: precioNumerico, categoria: prodCategoria, descripcion: prodDescripcion || p.descripcion, imagen: prodImagen.trim() !== '' ? prodImagen.trim() : p.imagen }
+          ? { ...p, nombre: prodNombre, precio: precioNum, categoria: prodCategoria, descripcion: prodDescripcion || p.descripcion, imagen: imagenUrl }
           : p
       );
-      actualizarBDProductos(modificados);
+      guardarProductosLocal(editados);
       setIdProdEditando(null);
-      alert("Catálogo actualizado.");
+      alert("Catálogo actualizado con éxito.");
     } else {
-      const nuevo = {
+      // Insertar nuevo producto
+      const nuevoProd = {
         id: Date.now(),
         nombre: prodNombre,
-        precio: precioNumerico,
+        precio: precioNum,
         categoria: prodCategoria,
         descripcion: prodDescripcion || "Sin descripción detallada disponible.",
-        imagen: urlImagenFinal
+        imagen: imagenUrl
       };
-      actualizarBDProductos([...inventarioProductos, nuevo]);
-      alert("Nuevo producto añadido al catálogo.");
+      guardarProductosLocal([...inventarioProductos, nuevoProd]);
+      alert("Nuevo producto añadido con éxito.");
     }
+
+    // Limpiar campos del formulario del panel
     setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen(''); setProdCategoria('');
   };
 
-  // Funciones del carrito
+  // Funciones básicas para administrar el Carrito de compras
   const agregarProducto = (producto) => {
-    const existe = carrito.find(item => item.id === producto.id);
-    if (existe) {
+    const encontrado = carrito.find(item => item.id === producto.id);
+    if (encontrado) {
       setCarrito(carrito.map(item =>
-        item.id === producto.id ? { ...existe, cantidad: existe.cantidad + 1 } : item
+        item.id === producto.id ? { ...encontrado, cantidad: encontrado.cantidad + 1 } : item
       ));
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
@@ -232,68 +204,54 @@ function App() {
   };
 
   const cambiarCantidad = (id, delta) => {
-    const producto = carrito.find(item => item.id === id);
-    if (!producto) return;
+    const itemCarrito = carrito.find(item => item.id === id);
+    if (!itemCarrito) return;
 
-    if (producto.cantidad === 1 && delta === -1) {
+    if (itemCarrito.cantidad === 1 && delta === -1) {
       eliminarProducto(id);
       return;
     }
 
     setCarrito(carrito.map(item =>
-      item.id === id ? { ...producto, cantidad: producto.cantidad + delta } : item
+      item.id === id ? { ...itemCarrito, cantidad: itemCarrito.cantidad + delta } : item
     ));
-    setTotal(total + (producto.precio * delta));
+    setTotal(total + (itemCarrito.precio * delta));
   };
 
   const eliminarProducto = (id) => {
-    const producto = carrito.find(item => item.id === id);
-    if (producto) {
+    const itemCarrito = carrito.find(item => item.id === id);
+    if (itemCarrito) {
       setCarrito(carrito.filter(item => item.id !== id));
-      setTotal(total - (producto.precio * producto.cantidad));
+      setTotal(total - (itemCarrito.precio * itemCarrito.cantidad));
     }
   };
 
-  // Lógica de finalización de compra
-  const grabarPedido = async (datosClienteDesdeCarrito) => {
+  // Función tradicional para procesar el pedido final hacia la API remota
+  const grabarPedido = async (datosCliente) => {
     setMensajeError('');
 
-    if (!validarRutChileno(rut)) {
-      setMensajeError('El RUT ingresado no cumple con el algoritmo Módulo 11.');
-      return;
-    }
+    const costoEnvioFinal = deliveryChecked ? 2500 : 0;
+    const rutEncriptado = encriptarRut(rut);
 
-    const edadCalculada = verificarEdad(fechaNacimiento);
-    if (edadCalculada < 18) {
-      setMensajeError('Debe ser mayor de 18 años para realizar una compra.');
-      return;
-    }
-
-    if (deliveryChecked && !direccion.trim()) {
-      setMensajeError('Debe ingresar una dirección válida.');
-      return;
-    }
-
-    const rutProtegido = encriptarRut(rut);
-
-    const payloadPedido = {
-      comprador_nombre: datosClienteDesdeCarrito.nombreCompleto,
-      comprador_correo: datosClienteDesdeCarrito.correo,
-      comprador_telefono: datosClienteDesdeCarrito.telefono,
-      comprador_rut_aes: rutProtegido,
-      edad_comprador: edadCalculada,
+    // Creamos el JSON con los datos estructurados que nos llegaron del Carrito
+    const pedidoPayload = {
+      comprador_nombre: datosCliente.nombreCompleto,
+      comprador_correo: datosCliente.correo,
+      comprador_telefono: datosCliente.telefono,
+      comprador_rut_aes: rutEncriptado,
       requiere_despacho: deliveryChecked,
-      domicilio_entrega: deliveryChecked ? direccion : 'Retiro en Oficina Central',
+      domicilio_entrega: direccion,
       artículos_comprados: carrito.map(i => ({ id: i.id, nombre: i.nombre, cantidad: i.cantidad })),
       monto_neto_transaccion: total,
-      monto_total_pagado: deliveryChecked ? total + 2500 : total,
+      monto_total_pagado: total + costoEnvioFinal,
       fecha_registro: new Date().toISOString()
     };
 
     try {
-      await guardarPedidoEnBD(payloadPedido);
-      alert(`¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(deliveryChecked ? total + 2500 : total).toLocaleString('es-CL')}`);
+      await guardarPedidoEnBD(pedidoPayload);
+      alert(`¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(total + costoEnvioFinal).toLocaleString('es-CL')}`);
 
+      // Limpiar estados globales para vaciar el flujo
       setCarrito([]);
       setTotal(0);
       setVerFormulario(false);
@@ -301,24 +259,21 @@ function App() {
       setFechaNacimiento('');
       setDireccion('');
       setDeliveryChecked(false);
-
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un inconveniente al guardar tu compra: " + err.message);
     }
   };
 
+  // Formateador simple de divisas en texto
   const formatearPrecio = (precioPesos) => {
-    // Para las otras divisas mantenemos los decimales porque sí los usan
     if (monedaActiva === 'UF') return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
     if (monedaActiva === 'EUR') return `€ ${(precioPesos / valoresDivisas.eur).toFixed(2)}`;
     if (monedaActiva === 'UTM') return `${(precioPesos / valoresDivisas.utm).toFixed(2)} UTM`;
-
-    // 🌟 CORREGIDO PARA CLP: Redondeamos al entero y formateamos con puntos estilo chileno real
     return `$ ${Math.round(precioPesos).toLocaleString('es-CL')}`;
   };
 
-  const cantidadTotalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+  const cantidadTotalItems = carrito.reduce((acumulado, item) => acumulado + item.cantidad, 0);
 
   if (cargandoAPI) {
     return (
@@ -406,22 +361,11 @@ function App() {
                         <tbody>
                           {registrosBase.map(reg => (
                             <tr key={reg.id}>
-                              <td className="text-warning fw-semibold">
-                                {(() => {
-                                  let valor = reg.rut.replace(/\./g, '').replace(/-/g, '').trim().toUpperCase();
-                                  if (valor.length < 2) return reg.rut;
-                                  let cuerpo = valor.slice(0, -1);
-                                  let dv = valor.slice(-1);
-                                  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                                  return `${cuerpo}-${dv}`;
-                                })()}
-                              </td>
+                              <td className="text-warning fw-semibold">{reg.rut}</td>
                               <td className="text-white fw-medium">{reg.nombre}</td>
                               <td className="text-white-50">{reg.correo}</td>
                               <td>
-                                <div className="p-2 rounded bg-black border border-secondary border-opacity-25 text-warning text-truncate font-monospace"
-                                  style={{ maxWidth: '180px', fontSize: '11px' }}
-                                  title={reg.passwordEncriptada}>
+                                <div className="p-2 rounded bg-black border border-secondary border-opacity-25 text-warning text-truncate font-monospace" style={{ maxWidth: '180px', fontSize: '11px' }} title={reg.passwordEncriptada}>
                                   {reg.passwordEncriptada}
                                 </div>
                               </td>
@@ -431,11 +375,7 @@ function App() {
                                 </span>
                               </td>
                               <td className="text-center">
-                                <button
-                                  className={`btn btn-xs w-100 ${reg.estado === 'activo' ? 'btn-outline-danger' : 'btn-success text-white'} py-1 px-2`}
-                                  style={{ fontSize: '11px', fontWeight: '500' }}
-                                  onClick={() => handleAlternarEstadoUsuario(reg.id)}
-                                >
+                                <button className={`btn btn-xs w-100 ${reg.estado === 'activo' ? 'btn-outline-danger' : 'btn-success text-white'} py-1 px-2`} style={{ fontSize: '11px', fontWeight: '500' }} onClick={() => handleAlternarEstadoUsuario(reg.id)}>
                                   {reg.estado === 'activo' ? 'Deshabilitar' : 'Habilitar'}
                                 </button>
                               </td>
@@ -516,7 +456,7 @@ function App() {
                               <td className="text-info fw-bold">${prod.precio.toLocaleString('es-CL')}</td>
                               <td className="text-center">
                                 <button className="btn btn-sm btn-warning py-1 px-2 me-2" style={{ fontSize: '11px' }} onClick={() => { setIdProdEditando(prod.id); setProdNombre(prod.nombre); setProdPrecio(prod.precio); setProdCategoria(prod.categoria); setProdDescripcion(prod.descripcion || ''); setProdImagen(prod.imagen || ''); }}>Editar</button>
-                                <button className="btn btn-sm btn-danger py-1 px-2" style={{ fontSize: '11px' }} onClick={() => actualizarBDProductos(inventarioProductos.filter(p => p.id !== prod.id))}>Eliminar</button>
+                                <button className="btn btn-sm btn-danger py-1 px-2" style={{ fontSize: '11px' }} onClick={() => guardarProductosLocal(inventarioProductos.filter(p => p.id !== prod.id))}>Eliminar</button>
                               </td>
                             </tr>
                           ))}
@@ -544,7 +484,7 @@ function App() {
                               <th>N° Orden</th>
                               <th>Fecha</th>
                               <th>Cliente / Contacto</th>
-                              <th>RUT</th>
+                              <th>RUT Encriptado</th>
                               <th>Artículos</th>
                               <th>Destino de Entrega</th>
                               <th className="text-end">Total</th>
