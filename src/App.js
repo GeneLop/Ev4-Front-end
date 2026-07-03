@@ -197,17 +197,23 @@ function App() {
   };
 
   // Funciones básicas para administrar el Carrito de compras
+  // En App.js, asegúrate de que agregarProducto esté así:
   const agregarProducto = (producto) => {
     const encontrado = carrito.find(item => item.id === producto.id);
     if (encontrado) {
       setCarrito(carrito.map(item =>
-        item.id === producto.id ? { ...encontrado, cantidad: encontrado.cantidad + 1 } : item
+        item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
       ));
     } else {
-      setCarrito([...carrito, { ...producto, quantity: 1 }]);
+      // Asegúrate de usar 'cantidad' (no 'quantity') para ser consistente
+      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
-    setTotal(total + producto.precio);
+    // Aseguramos que precio sea un número
+    setTotal(prev => prev + Number(producto.precio));
   };
+
+  // Y en tu Navbar, asegúrate de pasar el total correctamente:
+  // <Navbar ... total={total} ... />
 
   const cambiarCantidad = (id, delta) => {
     const itemCarrito = carrito.find(item => item.id === id);
@@ -377,8 +383,15 @@ function App() {
                               <td className="text-white fw-medium">{reg.nombre}</td>
                               <td className="text-white-50">{reg.correo}</td>
                               <td>
-                                <div className="p-2 rounded bg-black border border-secondary border-opacity-25 text-warning text-truncate font-monospace" style={{ maxWidth: '180px', fontSize: '11px' }} title={reg.passwordEncriptada}>
-                                  {reg.passwordEncriptada}
+                                <div className="p-2 border border-secondary text-info font-monospace"
+                                  style={{
+                                    fontSize: '11px',
+                                    backgroundColor: '#1a1d20', // Un gris muy oscuro, NO negro
+                                    color: '#36d399',           // Un verde brillante para que se lea perfecto
+                                    wordBreak: 'break-all',
+                                    borderRadius: '4px'
+                                  }}>
+                                  {reg.passwordEncriptada || "Error al generar Hash"}
                                 </div>
                               </td>
                               <td>

@@ -1,7 +1,20 @@
 // src/Componentes/Login.jsx
-import React, { useState } from 'react';
+import { validarRutChileno } from "../funciones";
+import CryptoJS from 'crypto-js';
+import React, { useState, useEffect } from 'react';
+
 
 function Login({ setAdminActivo }) {
+
+    const [usuarioLogueado, setUsuarioLogueado] = useState(null);
+
+    useEffect(() => {
+        const usuarioGuardado = localStorage.getItem("usuario");
+
+        if (usuarioGuardado) {
+            setUsuarioLogueado(usuarioGuardado);
+        }
+    }, []);
     // Estados estándar para controlar el formulario
     const [modo, setModo] = useState('login'); // 'login' o 'registro'
     const [correo, setCorreo] = useState('');
@@ -9,7 +22,19 @@ function Login({ setAdminActivo }) {
     const [nombre, setNombre] = useState('');
     const [rut, setRut] = useState('');
     const [mensaje, setMensaje] = useState('');
-    const [usuarioLogueado, setUsuarioLogueado] = useState(null);
+
+    const formatearRut = (valor) => {
+        let rut = valor.replace(/[^0-9kK]/g, "").toUpperCase();
+
+        if (rut.length <= 1) return rut;
+
+        let cuerpo = rut.slice(0, -1);
+        let dv = rut.slice(-1);
+
+        cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        return cuerpo + "-" + dv;
+    };
 
     // Funciones simples para cambiar de pestaña en el formulario
     const irARegistro = () => {
@@ -40,7 +65,20 @@ function Login({ setAdminActivo }) {
 
         // Buscar al usuario con un ciclo tradicional (find)
         const clienteEncontrado = usuariosBD.find(function (u) {
-            return u.correo === correo.trim() && u.password === password;
+            if (!u.passwordEncriptada) return false;
+
+            let passDesencriptada = '';
+
+            try {
+                passDesencriptada = CryptoJS.AES.decrypt(
+                    u.passwordEncriptada,
+                    'clave-secreta-universo-astro'
+                ).toString(CryptoJS.enc.Utf8);
+            } catch (error) {
+                return false;
+            }
+
+            return u.correo === correo.trim() && passDesencriptada === password;
         });
 
         // Verificar si se encontró y su estado
@@ -51,6 +89,7 @@ function Login({ setAdminActivo }) {
             }
             setUsuarioLogueado(clienteEncontrado.nombre);
             setAdminActivo(false);
+            localStorage.setItem("usuario", clienteEncontrado.nombre);
         } else {
             setAdminActivo(false);
             setMensaje('❌ Credenciales incorrectas. Correo o contraseña no válidos.');
@@ -65,33 +104,78 @@ function Login({ setAdminActivo }) {
         const datosLocales = localStorage.getItem('astroshop_bd_usuarios');
         const usuariosBD = JSON.parse(datosLocales) || [];
 
-        // Validar si el correo ya existe en la lista
-        const existeCorreo = usuariosBD.some(function (u) {
-            return u.correo === correo.trim();
-        });
-
-        if (existeCorreo) {
-            setMensaje('❌ El correo electrónico ya se encuentra registrado.');
+        // VALIDAR NOMBRE
+        if (nombre.trim().length < 3) {
+            setMensaje("❌ El nombre debe tener al menos 3 caracteres.");
             return;
         }
 
-        // Crear el objeto del nuevo usuario de forma explícita
+        const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
+
+        if (!soloLetras.test(nombre.trim())) {
+            setMensaje("❌ El nombre solo puede contener letras.");
+            return;
+        }
+
+        // VALIDAR RUT
+        if (!validarRutChileno(rut.trim())) {
+            setMensaje("❌ El RUT ingresado no es válido.");
+            return;
+        }
+
+        // VALIDAR RUT REPETIDO
+        const rutExiste = usuariosBD.some(u =>
+            u.rut.replace(/\./g, "").replace("-", "").toUpperCase() ===
+            rut.replace(/\./g, "").replace("-", "").toUpperCase()
+        );
+
+        if (rutExiste) {
+            setMensaje("❌ Ese RUT ya está registrado.");
+            return;
+        }
+
+        // VALIDAR CORREO
+        const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!correoValido.test(correo.trim())) {
+            setMensaje("❌ Debe ingresar un correo válido.");
+            return;
+        }
+
+        // VALIDAR CORREO REPETIDO
+        const correoExiste = usuariosBD.some(u =>
+            u.correo.toLowerCase() === correo.trim().toLowerCase()
+        );
+
+        if (correoExiste) {
+            setMensaje("❌ El correo ya se encuentra registrado.");
+            return;
+        }
+
+        // VALIDAR CONTRASEÑA
+        if (password.length < 6) {
+            setMensaje("❌ La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
         const nuevoCliente = {
             id: Date.now().toString(),
-            nombre: nombre,
-            rut: rut,
+            nombre: nombre.trim(),
+            rut: rut.trim(),
             correo: correo.trim(),
-            password: password,
+            passwordEncriptada: CryptoJS.AES.encrypt(password, 'clave-secreta-universo-astro').toString(),
             estado: 'activo'
         };
 
-        // Agregar el nuevo registro al arreglo e imprimirlo en LocalStorage
         const nuevaLista = [...usuariosBD, nuevoCliente];
-        localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
 
-        alert('🚀 ¡Cuenta creada con éxito! Ya puedes iniciar sesión con tus credenciales.');
+        localStorage.setItem(
+            'astroshop_bd_usuarios',
+            JSON.stringify(nuevaLista)
+        );
 
-        // Limpiar el formulario y regresar a la pestaña de login
+        alert('🚀 ¡Cuenta creada con éxito! Ya puedes iniciar sesión.');
+
         setModo('login');
         setNombre('');
         setRut('');
@@ -99,12 +183,12 @@ function Login({ setAdminActivo }) {
         setPassword('');
         setMensaje('');
 
-        // Forzar recarga simple del sitio
         window.location.reload();
     };
 
     // Función básica para cerrar sesión
     const handleLogout = () => {
+        localStorage.removeItem("usuario");
         setUsuarioLogueado(null);
         setAdminActivo(false);
         setCorreo('');
@@ -173,15 +257,61 @@ function Login({ setAdminActivo }) {
                         <form onSubmit={handleRegistroCliente} style={{ fontSize: '0.8rem' }}>
                             <div className="mb-2">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Nombre Completo:</label>
-                                <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Juan Pérez" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm bg-dark text-white border-secondary"
+                                    placeholder="Juan Pérez"
+                                    value={nombre}
+                                    onChange={(e) => setNombre(e.target.value)}
+                                    onBlur={() => {
+                                        if (nombre.trim().length < 3) {
+                                            setMensaje("❌ El nombre debe tener al menos 3 caracteres.");
+                                        } else if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(nombre.trim())) {
+                                            setMensaje("❌ El nombre solo puede contener letras.");
+                                        } else {
+                                            setMensaje("");
+                                        }
+                                    }}
+                                    required
+                                />
                             </div>
                             <div className="mb-2">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
-                                <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="19.876.543-2" value={rut} onChange={(e) => setRut(e.target.value)} required />
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm bg-dark text-white border-secondary"
+                                    placeholder="12.345.678-5"
+                                    value={rut}
+                                    onChange={(e) => setRut(formatearRut(e.target.value))}
+                                    onBlur={() => {
+                                        if (!validarRutChileno(rut)) {
+                                            setMensaje("❌ El RUT ingresado no es válido.");
+                                        } else {
+                                            setMensaje("");
+                                        }
+                                    }}
+                                    required
+                                />
                             </div>
                             <div className="mb-2">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
-                                <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="juan@correo.com" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
+                                <input
+                                    type="email"
+                                    className="form-control form-control-sm bg-dark text-white border-secondary"
+                                    placeholder="juan@correo.com"
+                                    value={correo}
+                                    onChange={(e) => setCorreo(e.target.value)}
+                                    onBlur={() => {
+                                        const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                                        if (!correoValido.test(correo.trim())) {
+                                            setMensaje("❌ Debe ingresar un correo válido. Ejemplo: usuario@correo.com");
+                                        } else {
+                                            setMensaje("");
+                                        }
+                                    }}
+                                    required
+                                />
                             </div>
                             <div className="mb-3">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Crea tu Contraseña:</label>
