@@ -129,7 +129,7 @@ function Inicio({
             {/* LOS MÁS VALORADOS CON ENLACES INTELIGENTES */}
             {filtroCategoria === 'todo' && favoritosComunidad.length > 0 && (
                 <div className="container mt-5">
-                    <div className="p-3 rounded-4 shadow-lg border border-info border-opacity-25"
+                    <div className="p-4 rounded-4 shadow-lg border border-info border-opacity-25"
                         style={{
                             background: 'linear-gradient(135deg, #1a1d20 0%, rgba(13, 202, 240, 0.08) 100%)',
                             borderLeft: '5px solid #0dcaf0 !important'
@@ -155,7 +155,19 @@ function Inicio({
                                                             <div className="text-info small fw-bold">{formatearPrecio(prod.precio)}</div>
                                                         </div>
                                                     </div>
-                                                    <a href={destinoAnclaje} className="btn btn-sm btn-info fw-bold px-3 py-1 text-dark text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.5px', flexShrink: 0 }}>
+                                                    <a
+                                                        href={destinoAnclaje}
+                                                        className="btn btn-sm btn-info fw-bold px-3 py-1 text-dark text-uppercase"
+                                                        style={{ fontSize: '11px', letterSpacing: '0.5px', flexShrink: 0 }}
+                                                        onClick={(e) => {
+                                                            e.preventDefault(); // evita pantalla blanca del router
+
+                                                            const el = document.querySelector(destinoAnclaje);
+                                                            if (el) {
+                                                                el.scrollIntoView({ behavior: 'smooth' });
+                                                            }
+                                                        }}
+                                                    >
                                                         Ver
                                                     </a>
                                                 </div>
