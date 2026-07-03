@@ -13,15 +13,11 @@ import Contacto from './Paginas/Contacto';
 import Terminos from './Paginas/Terminos';
 import Manual from './Paginas/Manual';
 
-// Lógica Funcional Externa (Aquí dejamos las funciones juntas y sin duplicar)
-import { validarRutChileno, verificarEdad, encriptarRut, guardarPedidoEnBD } from './funciones';
+// Lógica Funcional Externa
+import { encriptarRut, guardarPedidoEnBD } from './funciones';
 
-// COMPONENTE MONITOR: Cierra el panel de administración al cambiar de página
+// COMPONENTE MONITOR: 🌟 CAMBIO ALUMNO: Ya no apaga el admin al cambiar de página
 function MonitorDeRutas({ setAdminActivo }) {
-  const location = useLocation();
-  useEffect(() => {
-    setAdminActivo(false);
-  }, [location, setAdminActivo]);
   return null;
 }
 
@@ -30,6 +26,9 @@ function App() {
   const [adminActivo, setAdminActivo] = useState(false);
   const [pestañaAdmin, setPestañaAdmin] = useState('usuarios');
   const [cargandoAPI, setCargandoAPI] = useState(true);
+
+  // 🌟 ESTADO ALUMNO: Controla si el Admin está mirando el panel o paseando por las páginas
+  const [verPanelAdmin, setVerPanelAdmin] = useState(false);
 
   // Estados de Monedas
   const [monedaActiva, setMonedaActiva] = useState('CLP');
@@ -131,6 +130,11 @@ function App() {
     }
   }, [adminActivo, pestañaAdmin]);
 
+  // Al cambiar el estado de adminActivo, automáticamente decidimos si mostramos el panel o no
+  useEffect(() => {
+    setVerPanelAdmin(adminActivo);
+  }, [adminActivo]);
+
   // Funciones auxiliares para guardar cambios en LocalStorage
   const guardarUsuariosLocal = (nuevaLista) => {
     setRegistrosBase(nuevaLista);
@@ -200,7 +204,7 @@ function App() {
         item.id === producto.id ? { ...encontrado, cantidad: encontrado.cantidad + 1 } : item
       ));
     } else {
-      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+      setCarrito([...carrito, { ...producto, quantity: 1 }]);
     }
     setTotal(total + producto.precio);
   };
@@ -232,33 +236,14 @@ function App() {
   const grabarPedido = async (datosCliente) => {
     setMensajeError('');
 
-    // 🌟 BLOQUEO ALUMNO: Si la sesión de Administrador está activa, bloquea el checkout
     if (adminActivo) {
-      alert("⚠️ Error del Sistema: Las cuentas de Administrador no están autorizadas para realizar compras en la tienda. Por favor use una cuenta de cliente.");
-      return;
-    }
-
-    // Doble validación de seguridad para bloquear el RUT de puros números repetidos
-    const rutParaVerificar = datosCliente.rutValidado || rut;
-    const rutLimpio = rutParaVerificar.replace(/[^0-9kK]/g, '');
-    const esRepetido = /^(.)\1+$/.test(rutLimpio.slice(0, -1));
-
-    if (esRepetido || rutParaVerificar === '') {
-      alert("El RUT ingresado no es válido o es un registro de prueba repetido.");
-      return;
-    }
-
-    // Doble chequeo del formato del correo electrónico
-    const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    if (!regexCorreo.test(datosCliente.correo)) {
-      alert("El correo electrónico no tiene un formato válido.");
+      alert("⚠️ Las cuentas de Administrador no pueden realizar compras.");
       return;
     }
 
     const costoEnvioFinal = deliveryChecked ? 2500 : 0;
-    const rutEncriptado = encriptarRut(rutParaVerificar);
+    const rutEncriptado = encriptarRut(datosCliente.rutValidado);
 
-    // Creamos el JSON con los datos validados
     const pedidoPayload = {
       comprador_nombre: datosCliente.nombreCompleto,
       comprador_correo: datosCliente.correo,
@@ -336,12 +321,17 @@ function App() {
           setFechaNacimiento={setFechaNacimiento}
           mensajeError={mensajeError}
           onFinalizar={grabarPedido}
+          adminActivo={adminActivo}
           setAdminActivo={setAdminActivo}
           monedaActiva={monedaActiva}
           setMonedaActiva={setMonedaActiva}
+          // 🌟 PASAMOS EL NUEVO CONTROLADOR DE VISTA AL NAVBAR
+          verPanelAdmin={verPanelAdmin}
+          setVerPanelAdmin={setVerPanelAdmin}
         />
 
-        {adminActivo ? (
+        {/* 🌟 CAMBIO ALUMNO: Si adminActivo Y verPanelAdmin son verdaderos, muestra las tablas, sino muestra las páginas normales */}
+        {adminActivo && verPanelAdmin ? (
           <div className="bg-dark text-white flex-grow-1 p-5">
             <div className="container mt-4 bg-secondary bg-opacity-10 p-5 rounded border border-secondary shadow-sm">
 
@@ -556,15 +546,9 @@ function App() {
             <Routes>
               <Route path="/" element={
                 <Inicio
-                  productosTelescopios={inventarioProductos.filter((p) => {
-                    return p.categoria === 'telescopios';
-                  })}
-                  productosCursos={inventarioProductos.filter((p) => {
-                    return p.categoria === 'cursos';
-                  })}
-                  productosExperiencias={inventarioProductos.filter((p) => {
-                    return p.categoria === 'experiencias';
-                  })}
+                  productosTelescopios={inventarioProductos.filter((p) => { return p.categoria === 'telescopios'; })}
+                  productosCursos={inventarioProductos.filter((p) => { return p.categoria === 'cursos'; })}
+                  productosExperiencias={inventarioProductos.filter((p) => { return p.categoria === 'experiencias'; })}
                   agregarProducto={agregarProducto}
                   formatearPrecio={formatearPrecio}
                 />

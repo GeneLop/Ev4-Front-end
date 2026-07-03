@@ -81,13 +81,12 @@ function Carrito({
         setRut(rutFormateado.toLowerCase());
     };
 
-    // 🌟 VALIDACIÓN AL SALIR DEL CAMPO (RUT)
+    // VALIDACIÓN AL SALIR DEL CAMPO (RUT)
     const validarRutAlSalir = () => {
         if (rut === '') {
             setErrorRut('');
             return;
         }
-
         const rutLimpio = rut.replace(/[^0-9kK]/g, '');
         const esRepetido = /^(.)\1+$/.test(rutLimpio.slice(0, -1));
 
@@ -98,13 +97,12 @@ function Carrito({
         }
     };
 
-    // 🌟 VALIDACIÓN AL SALIR DEL CAMPO (CORREO)
+    // VALIDACIÓN AL SALIR DEL CAMPO (CORREO)
     const validarCorreoAlSalir = () => {
         if (correoLocal === '') {
             setErrorCorreo('');
             return;
         }
-
         const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (!regexCorreo.test(correoLocal)) {
             setErrorCorreo('Correo inválido (ejemplo@dominio.cl)');
@@ -113,13 +111,12 @@ function Carrito({
         }
     };
 
-    // 🌟 VALIDACIÓN AL SALIR DEL CAMPO (FECHA)
+    // VALIDACIÓN AL SALIR DEL CAMPO (FECHA)
     const validarFechaAlSalir = () => {
         if (fechaNacimiento === '') {
             setErrorEdad('');
             return;
         }
-
         if (verificarEdad(fechaNacimiento) < 18) {
             setErrorEdad('Debe ser mayor de 18 años');
         } else {
@@ -127,13 +124,12 @@ function Carrito({
         }
     };
 
-    // 🌟 VALIDACIÓN AL SALIR DEL CAMPO (TELEFONO)
+    // VALIDACIÓN AL SALIR DEL CAMPO (TELEFONO)
     const validarTelefonoAlSalir = () => {
         if (telefonoDigitos === '') {
             setErrorTelefono('');
             return;
         }
-
         if (telefonoDigitos.length !== 8) {
             setErrorTelefono('Debes ingresar los 8 dígitos restantes');
         } else {
@@ -166,7 +162,6 @@ function Carrito({
     const handleCheckoutFinal = (e) => {
         e.preventDefault();
 
-        // Validar dirección si es despacho
         if (metodoEntrega === 'despacho') {
             if (!calleNumero.trim()) {
                 setErrorDespacho('Dirección requerida');
@@ -177,13 +172,11 @@ function Carrito({
             setDireccion('Retiro en Oficina Central');
         }
 
-        // Ejecutar todas las validaciones una última vez antes de enviar por si acaso
         validarRutAlSalir();
         validarCorreoAlSalir();
         validarTelefonoAlSalir();
         validarFechaAlSalir();
 
-        // Si no hay errores y los campos no están vacíos, procesamos
         if (!errorRut && !errorCorreo && !errorTelefono && !errorEdad && rut && correoLocal && telefonoDigitos && fechaNacimiento && aceptaTerminos) {
             window.puntosDeEstaCompra = puntosEspaciales;
 
