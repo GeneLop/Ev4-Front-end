@@ -98,19 +98,16 @@ function App() {
       setInventarioProductos(JSON.parse(prodLocal));
       setCargandoAPI(false);
     } else {
-      fetch('https://api.jsonbin.io/v3/b/6a454d55da38895dfe1d4ead', {
-        headers: { "X-Master-Key": "$2a$10$dtbHXH.TTbtOy9GTj/htG..S8up8iLy.kQLVWWu2VlaYh0PcdPmL6" }
-      })
+      fetch("https://6a455557aab3faec3f69d15d.mockapi.io/Productos")
         .then(res => res.json())
-        .then(apiRes => {
-          const listaLimpia = apiRes.record?.productos || apiRes.record || [];
-          console.log("Catálogo original de JSONBin inyectado:", listaLimpia);
-          setInventarioProductos(listaLimpia);
-          localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(listaLimpia));
+        .then(datos => {
+          console.log("Catálogo cargado desde MockAPI:", datos);
+          setInventarioProductos(datos);
+          localStorage.setItem("astroshop_bd_productos_v4", JSON.stringify(datos));
           setCargandoAPI(false);
         })
         .catch(err => {
-          console.error("Error al cargar catálogo remoto:", err);
+          console.error("Error al cargar catálogo:", err);
           setCargandoAPI(false);
         });
     }
@@ -479,7 +476,17 @@ function App() {
                               <td className="text-info fw-bold">${prod.precio.toLocaleString('es-CL')}</td>
                               <td className="text-center">
                                 <button className="btn btn-sm btn-warning py-1 px-2 me-2" style={{ fontSize: '11px' }} onClick={() => { setIdProdEditando(prod.id); setProdNombre(prod.nombre); setProdPrecio(prod.precio); setProdCategoria(prod.categoria); setProdDescripcion(prod.descripcion || ''); setProdImagen(prod.imagen || ''); }}>Editar</button>
-                                <button className="btn btn-sm btn-danger py-1 px-2" style={{ fontSize: '11px' }} onClick={() => guardarProductosLocal(inventarioProductos.filter(p => p.id !== prod.id))}>Eliminar</button>
+                                <button
+                                  className="btn btn-sm btn-danger py-1 px-2"
+                                  style={{ fontSize: '11px' }}
+                                  onClick={() => {
+                                    if (window.confirm(`¿Estás seguro de que deseas eliminar el producto: "${prod.nombre}"?`)) {
+                                      guardarProductosLocal(inventarioProductos.filter(p => p.id !== prod.id));
+                                    }
+                                  }}
+                                >
+                                  Eliminar
+                                </button>
                               </td>
                             </tr>
                           ))}

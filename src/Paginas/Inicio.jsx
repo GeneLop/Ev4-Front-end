@@ -18,7 +18,7 @@ function Inicio({
 
     // Llamada automática a la API pública de la NASA (APOD)
     useEffect(() => {
-        fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
+        fetch('https://api.nasa.gov/planetary/apod?api_key=Q369KcbGyQmPIGVAPg2MLWKEUtbG4gxZ46z2gahO')
             .then((res) => res.json())
             .then((data) => {
                 setFotoNasa(data);

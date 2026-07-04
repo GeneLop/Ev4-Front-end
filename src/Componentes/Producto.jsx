@@ -9,23 +9,25 @@ function Producto({ p, onAgregar, formatearPrecio }) {
 
     return (
         <div className="col-md-4 mb-4">
-            {/* VOLVIMOS AL TONO ORIGINAL #2c313a PERO CON BORDE DEFINIDO */}
             <div className="card h-100 position-relative overflow-hidden"
                 style={{
                     backgroundColor: '#2c313a',
-                    border: '1px solid #444', // Borde más marcado para separar del fondo
+                    border: '1px solid #444',
                     boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
                     borderRadius: '15px'
                 }}>
 
                 <div className="text-center bg-black" style={{ height: '220px', width: '100%' }}>
-                    <img src={p.imagen} className="w-100 h-100 object-fit-cover" alt={p.nombre} />
+                    <img
+                        src={p.imagen}
+                        className="w-100 h-100 object-fit-cover"
+                        alt={p.nombre}
+                    />
                 </div>
 
                 <div className="card-body d-flex flex-column justify-content-between p-4">
                     <div>
                         <h5 className="h6 text-info fw-bold text-uppercase">{p.nombre}</h5>
-
                         <div className="d-flex align-items-center gap-2 my-2 flex-wrap">
                             <span className="text-white-50 text-decoration-line-through fw-semibold" style={{ letterSpacing: '0.5px' }}>
                                 {formatearPrecio(precioOriginal)}
@@ -37,7 +39,6 @@ function Producto({ p, onAgregar, formatearPrecio }) {
                                 CYBER
                             </span>
                         </div>
-
                         <p className="text-white small opacity-75" style={{ whiteSpace: 'pre-line' }}>
                             {p.descripcion.split('\n\n')[0]}
                         </p>
@@ -59,7 +60,10 @@ function Producto({ p, onAgregar, formatearPrecio }) {
                     <div className="position-absolute p-4 text-white border border-info"
                         style={{
                             top: 0, left: 0, right: 0, bottom: 0,
-                            backgroundColor: 'rgba(44, 49, 58, 0.98)',
+                            // Opacidad muy alta (0.92) para que el blanco de la letra sea casi puro
+                            backgroundColor: 'rgba(44, 49, 58, 0.92)',
+                            // Desenfoque casi imperceptible para que el ojo detecte el material, no la distorsión
+                            backdropFilter: 'blur(2px)',
                             zIndex: '10',
                             overflowY: 'auto'
                         }}>
