@@ -65,9 +65,6 @@ function Navbar({
                             <NavLink className={estiloEnlace} to="/nosotros" onClick={irAPaginaNormal}>Nosotros</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className={estiloEnlace} to="/proyecto" onClick={irAPaginaNormal}>Proyecto</NavLink>
-                        </li>
-                        <li className="nav-item">
                             <NavLink className={estiloEnlace} to="/contacto" onClick={irAPaginaNormal}>Contacto</NavLink>
                         </li>
                         <li className="nav-item">

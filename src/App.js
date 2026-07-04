@@ -8,7 +8,6 @@ import Footer from './Componentes/Footer';
 // Importación de Vistas / Páginas
 import Inicio from './Paginas/Inicio';
 import Nosotros from './Paginas/Nosotros';
-import Proyecto from './Paginas/Proyecto';
 import Contacto from './Paginas/Contacto';
 import Terminos from './Paginas/Terminos';
 import Manual from './Paginas/Manual';
@@ -567,7 +566,6 @@ function App() {
                 />
               } />
               <Route path="/nosotros" element={<Nosotros />} />
-              <Route path="/proyecto" element={<Proyecto />} />
               <Route path="/contacto" element={<Contacto />} />
               <Route path="/terminos" element={<Terminos />} />
               <Route path="/manual" element={<Manual />} />
