@@ -39,7 +39,7 @@ function Producto({ p, onAgregar, formatearPrecio }) {
                                 CYBER
                             </span>
                         </div>
-                        <p className="text-white small opacity-75" style={{ whiteSpace: 'pre-line' }}>
+                        <p className="text-white small" style={{ whiteSpace: 'pre-line' }}>
                             {p.descripcion.split('\n\n')[0]}
                         </p>
                     </div>

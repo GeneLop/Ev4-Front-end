@@ -47,7 +47,13 @@ function Navbar({
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top">
             <div className="container">
                 {/* Logo Principal */}
+                {/* Logo Principal con Icono */}
                 <Link className="navbar-brand fw-bold text-uppercase d-flex align-items-center" to="/" onClick={irAPaginaNormal}>
+                    {/* SVG Minimalista */}
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="me-2 text-info">
+                        <circle cx="12" cy="12" r="7"></circle>
+                        <ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(45 12 12)"></ellipse>
+                    </svg>
                     AstroShop
                 </Link>
 

@@ -22,9 +22,12 @@ function Banner() {
                     style={{ fontSize: '1.2rem', fontWeight: '700', textShadow: '1px 1px 4px rgba(0, 0, 0, 0.6)' }}>
                     Equipamiento astronómico de alta gama, capacitaciones certificadas y recursos interactivos de exploración científica escolar y profesional.
                 </p>
-                <a className="btn btn-info text-dark btn-lg fw-bold text-uppercase px-4 shadow" href="#carta-productos">
-                    Ver nuestro Catálogo
-                </a>
+                <button
+                    className="btn btn-info text-dark btn-lg fw-bold text-uppercase px-4 shadow"
+                    onClick={() => document.getElementById('carta-productos').scrollIntoView({ behavior: 'smooth' })}
+                >
+                    Ver nuestro catálogo
+                </button>
             </div>
         </div>
     );

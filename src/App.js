@@ -263,7 +263,7 @@ function App() {
 
     try {
       await guardarPedidoEnBD(pedidoPayload);
-      alert(`¡Pedido Procesado con Éxito!\n\nTotal Pagado: $${(total + costoEnvioFinal).toLocaleString('es-CL')}`);
+      alert(`¡Gracias por tu compra en AstroShop!\n\nHemos recibido tu pedido correctamente.\nTotal Pagado: $${(total + costoEnvioFinal).toLocaleString('es-CL')}\n\n¿Qué sigue ahora?\n- Recibirás un correo con el seguimiento de tus productos físicos.\n- Si compraste cursos, revisa tu bandeja de entrada (incluyendo spam) para obtener tus credenciales de acceso.\n\nGracias por confiar en nosotros.`);
 
       setCarrito([]);
       setTotal(0);
@@ -367,8 +367,8 @@ function App() {
                             <th>RUT</th>
                             <th>Nombre de Usuario</th>
                             <th>Correo Electrónico</th>
-                            <th>Hash Contraseña</th>
-                            <th>Estado Operativo</th>
+                            <th>Contraseña</th>
+                            <th>Estado</th>
                             <th className="text-center" style={{ width: '150px' }}>Gestión</th>
                           </tr>
                         </thead>
@@ -513,7 +513,7 @@ function App() {
                               <th>N° Orden</th>
                               <th>Fecha</th>
                               <th>Cliente / Contacto</th>
-                              <th>RUT Encriptado</th>
+                              <th>RUT</th>
                               <th>Artículos</th>
                               <th>Destino de Entrega</th>
                               <th className="text-end">Total</th>

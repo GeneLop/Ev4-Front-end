@@ -20,7 +20,7 @@ function Nosotros() {
                 </div>
             </div>
 
-            {/* 2. BLOQUE DE ENFOQUE (MISIÓN Y VISIÓN) - TEXTO BLANCO PURO */}
+            {/* 2. BLOQUE DE ENFOQUE (MISIÓN Y VISIÓN) */}
             <div className="p-4 p-md-5 rounded-4 mb-4 shadow-lg" style={{ backgroundColor: '#2c313a', borderLeft: '6px solid #0dcaf0' }}>
                 <div className="row g-4">
                     <div className="col-md-6 pe-md-4">
@@ -42,13 +42,13 @@ function Nosotros() {
                 </div>
             </div>
 
-            {/* 3. INDICADORES TÉCNICOS - TEXTO BLANCO PURO */}
+            {/* 3. INDICADORES TÉCNICOS */}
             <div className="row g-3 mb-5 text-center">
                 {[
                     { val: "100%", txt: "Calidad Verificada", color: "text-info" },
                     { val: "+240", txt: "Alumnos Online", color: "text-warning" },
-                    { val: "+20", txt: "Telescopios", color: "text-success" },
-                    { val: "+10", txt: "Cursos Activos", color: "text-danger" }
+                    { val: "+20", txt: "Telescopios", color: "text-info" },
+                    { val: "+10", txt: "Cursos Activos", color: "text-warning" }
                 ].map((item, i) => (
                     <div key={i} className="col-6 col-md-3">
                         <div className="p-4 rounded-4 h-100 shadow-sm" style={{ backgroundColor: '#2c313a', border: '1px solid #444' }}>
@@ -59,12 +59,12 @@ function Nosotros() {
                 ))}
             </div>
 
-            {/* 4. PANELES DE TRABAJO - TEXTO BLANCO PURO */}
+            {/* 4. PANELES DE TRABAJO */}
             <div className="d-flex flex-column gap-4">
                 {[
                     { id: "01", t: "Control de Calidad", d: "Sometemos cada componente a validaciones técnicas para garantizar desempeño en condiciones extremas.", color: "#0dcaf0" },
                     { id: "02", t: "Formación Técnica", d: "Capacitaciones con metodología progresiva enfocadas en montaje, alineación y software estelar.", color: "#ffc107" },
-                    { id: "03", t: "Soporte Operativo", d: "Asistencia postventa orientada a configuración, calibración de monturas y mantenimiento.", color: "#198754" }
+                    { id: "03", t: "Soporte Operativo", d: "Asistencia postventa orientada a configuración, calibración de monturas y mantenimiento.", color: "#0dcaf0" }
                 ].map((p, i) => (
                     <div key={i} className="p-4 rounded-4 shadow-lg" style={{ backgroundColor: '#2c313a', borderLeft: `6px solid ${p.color}` }}>
                         <div className="row align-items-center">
