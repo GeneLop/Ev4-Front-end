@@ -5,6 +5,7 @@ import { validarRutChileno, verificarEdad } from '../funciones';
 function Carrito({
     carrito,
     total,
+    formatearPrecio,
     eliminarProducto,
     cambiarCantidad,
     verFormulario,
@@ -92,7 +93,7 @@ function Carrito({
         const esRepetido = /^(.)\1+$/.test(rutLimpio.slice(0, -1));
 
         if (!validarRutChileno(rut) || esRepetido || rutLimpio.length < 8) {
-            setErrorRut('RUT inválido o de prueba no permitido');
+            setErrorRut('RUT inválido');
         } else {
             setErrorRut('');
         }
@@ -132,7 +133,7 @@ function Carrito({
             return;
         }
         if (telefonoDigitos.length !== 8) {
-            setErrorTelefono('Debes ingresar los 8 dígitos restantes');
+            setErrorTelefono('El telefono debe tener 8 digitos');
         } else {
             setErrorTelefono('');
         }
@@ -212,7 +213,9 @@ function Carrito({
                             <div key={item.id} className="d-flex justify-content-between align-items-center bg-secondary bg-opacity-10 p-2 mb-2 rounded border border-secondary" style={{ fontSize: '0.85rem' }}>
                                 <div style={{ width: '65%' }}>
                                     <h6 className="m-0 fw-semibold text-truncate" style={{ fontSize: '0.85rem' }}>{item.nombre}</h6>
-                                    <small className="text-info fw-semibold">${item.precio.toLocaleString('es-CL')} c/u</small>
+                                    <small className="text-info fw-semibold">
+                                        {formatearPrecio(item.precio)} c/u
+                                    </small>
                                 </div>
                                 <div className="d-flex align-items-center gap-2">
                                     <button type="button" className="btn btn-sm btn-outline-light py-0 px-2" onClick={() => cambiarCantidad(item.id, -1)}>-</button>
@@ -228,7 +231,7 @@ function Carrito({
                         <div className="pt-2">
                             <div className="d-flex justify-content-between align-items-center px-1 mb-3" style={{ fontSize: '1rem' }}>
                                 <span className="text-white fw-light">Total parcial:</span>
-                                <span className="text-info fw-bold fs-5" style={{ letterSpacing: '0.5px' }}>${total.toLocaleString('es-CL')}</span>
+                                <span className="text-info fw-bold fs-5" style={{ letterSpacing: '0.5px' }}>{formatearPrecio(total)}</span>
                             </div>
                             <button type="button" className="btn btn-warning w-100 fw-bold py-2 text-uppercase" style={{ fontSize: '0.85rem', letterSpacing: '0.5px' }} onClick={() => setVerFormulario(true)}>
                                 Proceder al Pago
@@ -342,7 +345,7 @@ function Carrito({
                             <div className="bg-dark bg-opacity-50 p-3 rounded border border-secondary mb-3" style={{ fontSize: '0.8rem' }}>
                                 <div className="d-flex justify-content-between mb-1">
                                     <span className="text-white">Subtotal Neto:</span>
-                                    <span className="fw-semibold">${total.toLocaleString('es-CL')}</span>
+                                    <span className="fw-semibold">{formatearPrecio(total)}</span>
                                 </div>
                                 <div className="d-flex justify-content-between mb-1">
                                     <span className="text-white">Costo de Envío:</span>
@@ -354,7 +357,9 @@ function Carrito({
                                 </div>
                                 <div className="d-flex justify-content-between fw-bold align-items-center pt-1" style={{ fontSize: '1rem' }}>
                                     <span className="text-info">Total Final:</span>
-                                    <span className="text-info fw-bold">${(total + costoDespacho).toLocaleString('es-CL')}</span>
+                                    <span className="text-info fw-bold">
+                                        {formatearPrecio(total + costoDespacho)}
+                                    </span>
                                 </div>
                             </div>
 

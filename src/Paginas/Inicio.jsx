@@ -85,7 +85,7 @@ function Inicio({
                                         maxWidth: '650px',
                                         textShadow: '1px 1px 3px rgba(0, 0, 0, 0.8)'
                                     }}>
-                                    Válido desde el 8 hasta el 15 de julio. Ingresa tu RUT al finalizar tu compra y acumula un 1% en Puntos Espaciales para canjear en nuestro catálogo.
+                                    Válido desde el 6 hasta el 13 de julio. Ingresa tu RUT al finalizar tu compra y acumula un 1% en Puntos Espaciales para canjear en nuestro catálogo.
                                 </p>
 
                                 <p className="text-white text-uppercase fw-semibold mt-2 mb-0" style={{ letterSpacing: '1px', fontSize: '0.85rem', opacity: 0.8 }}>

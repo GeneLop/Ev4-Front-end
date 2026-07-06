@@ -84,7 +84,7 @@ function Login({ setAdminActivo }) {
         // Verificar si se encontró y su estado
         if (clienteEncontrado) {
             if (clienteEncontrado.estado === 'inactivo') {
-                setMensaje('❌ Esta cuenta ha sido desactivada por el administrador.');
+                setMensaje('Esta cuenta ha sido desactivada por el administrador.');
                 return;
             }
             setUsuarioLogueado(clienteEncontrado.nombre);
@@ -92,7 +92,7 @@ function Login({ setAdminActivo }) {
             localStorage.setItem("usuario", clienteEncontrado.nombre);
         } else {
             setAdminActivo(false);
-            setMensaje('❌ Credenciales incorrectas. Correo o contraseña no válidos.');
+            setMensaje('Credenciales incorrectas. Correo o contraseña no válidos.');
         }
     };
 
@@ -106,20 +106,20 @@ function Login({ setAdminActivo }) {
 
         // VALIDAR NOMBRE
         if (nombre.trim().length < 3) {
-            setMensaje("❌ El nombre debe tener al menos 3 caracteres.");
+            setMensaje("El nombre debe tener al menos 3 caracteres.");
             return;
         }
 
         const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
 
         if (!soloLetras.test(nombre.trim())) {
-            setMensaje("❌ El nombre solo puede contener letras.");
+            setMensaje("El nombre solo puede contener letras.");
             return;
         }
 
         // VALIDAR RUT
         if (!validarRutChileno(rut.trim())) {
-            setMensaje("❌ El RUT ingresado no es válido.");
+            setMensaje("El RUT ingresado no es válido.");
             return;
         }
 
@@ -130,7 +130,7 @@ function Login({ setAdminActivo }) {
         );
 
         if (rutExiste) {
-            setMensaje("❌ Ese RUT ya está registrado.");
+            setMensaje("Ese RUT ya está registrado.");
             return;
         }
 
@@ -138,7 +138,7 @@ function Login({ setAdminActivo }) {
         const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!correoValido.test(correo.trim())) {
-            setMensaje("❌ Debe ingresar un correo válido.");
+            setMensaje("Debe ingresar un correo válido.");
             return;
         }
 
@@ -148,13 +148,13 @@ function Login({ setAdminActivo }) {
         );
 
         if (correoExiste) {
-            setMensaje("❌ El correo ya se encuentra registrado.");
+            setMensaje("El correo ya se encuentra registrado.");
             return;
         }
 
         // VALIDAR CONTRASEÑA
         if (password.length < 6) {
-            setMensaje("❌ La contraseña debe tener al menos 6 caracteres.");
+            setMensaje("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
 
@@ -202,7 +202,7 @@ function Login({ setAdminActivo }) {
             {/* Encabezado del contenedor */}
             <div className="d-flex justify-content-between border-bottom border-secondary pb-2 mb-3">
                 <h5 className="text-warning text-uppercase fw-bold m-0" style={{ fontSize: '0.9rem' }}>
-                    {usuarioLogueado ? 'Sesión Activa' : modo === 'login' ? 'Identificarse' : 'Crear Cuenta'}
+                    {usuarioLogueado ? 'Sesión Activa' : modo === 'login' ? 'Inicia sesión o regístrate.' : 'Crear Cuenta'}
                 </h5>
 
                 {/* Botón para alternar vistas */}
@@ -210,7 +210,7 @@ function Login({ setAdminActivo }) {
                     <>
                         {modo === 'login' ? (
                             <button type="button" className="btn btn-sm btn-link text-info p-0 text-decoration-none" style={{ fontSize: '11px' }} onClick={irARegistro}>
-                                ¿No tienes cuenta? Regístrate
+                                ¿No tienes cuenta?
                             </button>
                         ) : (
                             <button type="button" className="btn btn-sm btn-link text-info p-0 text-decoration-none" style={{ fontSize: '11px' }} onClick={irALogin}>
@@ -250,7 +250,7 @@ function Login({ setAdminActivo }) {
                                 </div>
                             )}
                             <button type="submit" className="btn btn-sm btn-info text-dark w-100 fw-bold text-uppercase py-2" style={{ fontSize: '11px' }}>
-                                Ingresar al Sistema
+                                Ingresar
                             </button>
                         </form>
                     ) : (
@@ -265,9 +265,9 @@ function Login({ setAdminActivo }) {
                                     onChange={(e) => setNombre(e.target.value)}
                                     onBlur={() => {
                                         if (nombre.trim().length < 3) {
-                                            setMensaje("❌ El nombre debe tener al menos 3 caracteres.");
+                                            setMensaje("El nombre debe tener al menos 3 caracteres.");
                                         } else if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(nombre.trim())) {
-                                            setMensaje("❌ El nombre solo puede contener letras.");
+                                            setMensaje("El nombre solo puede contener letras.");
                                         } else {
                                             setMensaje("");
                                         }
@@ -285,7 +285,7 @@ function Login({ setAdminActivo }) {
                                     onChange={(e) => setRut(formatearRut(e.target.value))}
                                     onBlur={() => {
                                         if (!validarRutChileno(rut)) {
-                                            setMensaje("❌ El RUT ingresado no es válido.");
+                                            setMensaje("El RUT ingresado no es válido.");
                                         } else {
                                             setMensaje("");
                                         }
@@ -305,7 +305,7 @@ function Login({ setAdminActivo }) {
                                         const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                                         if (!correoValido.test(correo.trim())) {
-                                            setMensaje("❌ Debe ingresar un correo válido. Ejemplo: usuario@correo.com");
+                                            setMensaje("Debe ingresar un correo válido. Ejemplo: usuario@correo.com");
                                         } else {
                                             setMensaje("");
                                         }
@@ -323,7 +323,7 @@ function Login({ setAdminActivo }) {
                                 </div>
                             )}
                             <button type="submit" className="btn btn-sm btn-success w-100 fw-bold text-uppercase py-2" style={{ fontSize: '11px' }}>
-                                Registrar Nueva Cuenta
+                                Registrarme
                             </button>
                         </form>
                     )}

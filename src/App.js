@@ -264,7 +264,7 @@ function App() {
 
     try {
       await guardarPedidoEnBD(pedidoPayload);
-      alert(`¡Gracias por tu compra en AstroShop!\n\nHemos recibido tu pedido correctamente.\nTotal Pagado: $${(total + costoEnvioFinal).toLocaleString('es-CL')}\n\n¿Qué sigue ahora?\n- Recibirás un correo con el seguimiento de tus productos físicos.\n- Si compraste cursos, revisa tu bandeja de entrada (incluyendo spam) para obtener tus credenciales de acceso.\n\nGracias por confiar en nosotros.`);
+      alert(`¡Gracias por tu compra en AstroShop!\n\nHemos recibido tu pedido correctamente.\nTotal Pagado: ${formatearPrecio(total + costoEnvioFinal)}\n\n¿Qué sigue ahora?\n- Recibirás un correo con el seguimiento de tus productos físicos.\n- Si compraste cursos, revisa tu bandeja de entrada (incluyendo spam) para obtener tus credenciales de acceso.\n\nGracias por confiar en nosotros.`);
 
       setCarrito([]);
       setTotal(0);
@@ -322,6 +322,7 @@ function App() {
           cantidadCarrito={cantidadTotalItems}
           carrito={carrito}
           total={total}
+          formatearPrecio={formatearPrecio}
           eliminarProducto={eliminarProducto}
           cambiarCantidad={cambiarCantidad}
           verFormulario={verFormulario}

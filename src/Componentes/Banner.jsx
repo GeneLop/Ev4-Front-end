@@ -1,11 +1,9 @@
-// src/Componentes/Banner.jsx
 import React from 'react';
 
 function Banner() {
     return (
         <div className="position-relative overflow-hidden p-5 text-center text-white"
             style={{
-                // 🌌 FILTRO EQUILIBRADO: Capa negra muy suave (0.35) solo para bajar el brillo molesto
                 backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url("/imagenes/banner.jpg")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',

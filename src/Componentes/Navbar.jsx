@@ -9,6 +9,7 @@ function Navbar({
     carrito,
     total,
     eliminarProducto,
+    formatearPrecio,
     cambiarCantidad,
     verFormulario,
     setVerFormulario,
@@ -132,6 +133,7 @@ function Navbar({
                                     <Carrito
                                         carrito={carrito}
                                         total={total}
+                                        formatearPrecio={formatearPrecio}
                                         eliminarProducto={eliminarProducto}
                                         cambiarCantidad={cambiarCantidad}
                                         verFormulario={verFormulario}
