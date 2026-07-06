@@ -22,6 +22,8 @@ function MonitorDeRutas({ setAdminActivo }) {
 
 function App() {
   // Estados de control general
+  const [mostrarModalExito, setMostrarModalExito] = useState(false);
+  const [mensajeExito, setMensajeExito] = useState('');
   const [adminActivo, setAdminActivo] = useState(false);
   const [pestañaAdmin, setPestañaAdmin] = useState('usuarios');
   const [cargandoAPI, setCargandoAPI] = useState(true);
@@ -239,7 +241,7 @@ function App() {
     setMensajeError('');
 
     if (adminActivo) {
-      alert("⚠️ Las cuentas de Administrador no pueden realizar compras.");
+      alert("Las cuentas de Administrador no pueden realizar compras.");
       return;
     }
 
@@ -264,7 +266,19 @@ function App() {
 
     try {
       await guardarPedidoEnBD(pedidoPayload);
-      alert(`¡Gracias por tu compra en AstroShop!\n\nHemos recibido tu pedido correctamente.\nTotal Pagado: ${formatearPrecio(total + costoEnvioFinal)}\n\n¿Qué sigue ahora?\n- Recibirás un correo con el seguimiento de tus productos físicos.\n- Si compraste cursos, revisa tu bandeja de entrada (incluyendo spam) para obtener tus credenciales de acceso.\n\nGracias por confiar en nosotros.`);
+      setMensajeExito(`¡Gracias por tu compra en AstroShop!
+
+Hemos recibido tu pedido correctamente.
+
+Total Pagado: ${formatearPrecio(total + costoEnvioFinal)}
+
+¿Qué sigue ahora?
+- Recibirás un correo con el seguimiento de tus productos físicos.
+- Si compraste cursos, revisa tu bandeja de entrada (incluyendo spam) para obtener tus credenciales de acceso.
+
+Gracias por confiar en nosotros.`);
+
+      setMostrarModalExito(true);
 
       setCarrito([]);
       setTotal(0);
@@ -315,6 +329,50 @@ function App() {
 
   return (
     <Router>
+      {mostrarModalExito && (
+        <div
+          className="modal d-block"
+          tabIndex="-1"
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            fontFamily: "Arial, Helvetica, sans-serif"
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content bg-dark text-white border border-info">
+
+              <div className="modal-header border-secondary">
+                <h5 className="modal-title text-info">
+                  Compra realizada con éxito
+                </h5>
+              </div>
+
+              {/* 🔥 SIN PRE (esto era lo que daba sensación “robot”) */}
+              <div
+                className="modal-body"
+                style={{
+                  whiteSpace: 'pre-line',
+                  fontSize: '0.95rem',
+                  lineHeight: '1.6',
+                  padding: '20px'
+                }}
+              >
+                {mensajeExito}
+              </div>
+
+              <div className="modal-footer border-secondary">
+                <button
+                  className="btn btn-info text-dark fw-bold"
+                  onClick={() => setMostrarModalExito(false)}
+                >
+                  Cerrar
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
       <MonitorDeRutas setAdminActivo={setAdminActivo} />
 
       <div className="d-flex flex-column min-vh-screen bg-dark">

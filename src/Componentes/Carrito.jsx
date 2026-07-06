@@ -234,7 +234,7 @@ function Carrito({
                                 <span className="text-info fw-bold fs-5" style={{ letterSpacing: '0.5px' }}>{formatearPrecio(total)}</span>
                             </div>
                             <button type="button" className="btn btn-warning w-100 fw-bold py-2 text-uppercase" style={{ fontSize: '0.85rem', letterSpacing: '0.5px' }} onClick={() => setVerFormulario(true)}>
-                                Proceder al Pago
+                                Pagar
                             </button>
                         </div>
                     ) : (

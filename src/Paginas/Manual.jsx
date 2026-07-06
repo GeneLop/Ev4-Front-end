@@ -27,7 +27,7 @@ function Manual() {
         {
             id: "04",
             t: "Panel de Administrador",
-            d: "Sección exclusiva donde puedes gestionar cuentas de usuario (habilitar/deshabilitar), controlar el inventario (CRUD de productos) y revisar el historial de pedidos realizados por los clientes, todo centralizado en pestañas dedicadas.",
+            d: "Sección donde puedes gestionar cuentas de usuario (habilitar/deshabilitar), controlar el inventario (CRUD de productos) y revisar el historial de pedidos realizados por los clientes.",
             color: colorAmarillo
         },
         {

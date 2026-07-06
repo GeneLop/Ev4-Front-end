@@ -174,7 +174,7 @@ function Login({ setAdminActivo }) {
             JSON.stringify(nuevaLista)
         );
 
-        alert('🚀 ¡Cuenta creada con éxito! Ya puedes iniciar sesión.');
+        alert('¡Cuenta creada con éxito! Ya puedes iniciar sesión.');
 
         setModo('login');
         setNombre('');
