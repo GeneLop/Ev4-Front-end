@@ -10,8 +10,8 @@ function Carrito({
     cambiarCantidad,
     verFormulario,
     setVerFormulario,
-    deliveryChecked,
-    setDeliveryChecked,
+    conEnvio,
+    setconEnvio,
     direccion,
     setDireccion,
     rut,
@@ -20,7 +20,7 @@ function Carrito({
     setFechaNacimiento,
     onFinalizar
 }) {
-    // Estados estándar para los campos del formulario
+    // Variables de los inputs
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [correoLocal, setCorreoLocal] = useState('');
@@ -32,7 +32,7 @@ function Carrito({
     const [comunaSeleccionada, setComunaSeleccionada] = useState('Punta Arenas');
     const [calleNumero, setCalleNumero] = useState('');
 
-    // Estados para guardar los mensajes de error en pantalla
+    // Mensajes para mostrar si hay errores
     const [errorRut, setErrorRut] = useState('');
     const [errorEdad, setErrorEdad] = useState('');
     const [errorCorreo, setErrorCorreo] = useState('');
@@ -40,7 +40,7 @@ function Carrito({
     const [errorDespacho, setErrorDespacho] = useState('');
     const [puntosEspaciales, setPuntosEspaciales] = useState(0);
 
-    // Costo de despacho con un if/else simple
+    // Calcular el precio del envío 
     let costoDespacho = 0;
     if (metodoEntrega === 'despacho') {
         if (regionSeleccionada === 'Magallanes') {
@@ -49,20 +49,20 @@ function Carrito({
             costoDespacho = 15000;
         }
     }
-
+    // Regiones y comunas para el select
     const regionesChile = {
         "Magallanes": ["Punta Arenas", "Puerto Natales", "Porvenir", "Cabo de Hornos"],
         "Metropolitana": ["Santiago", "Providencia", "Las Condes", "Maipú", "Ñuñoa"],
         "Valparaíso": ["Valparaíso", "Viña del Mar", "Quilpué", "Villa Alemana"],
         "Biobío": ["Concepción", "Talcahuano", "San Pedro de la Paz", "Chillán"]
     };
-
+    // Calcular puntos (1% del total)
     useEffect(() => {
         setPuntosEspaciales(Math.floor(total * 0.01));
     }, [total]);
 
-    // Maneja la escritura del RUT formateándolo automáticamente
-    const handleRutChange = (e) => {
+    // Función para poner los puntos y guion en el RUT al escribir
+    const cambiarRut = (e) => {
         let valor = e.target.value.replace(/[^0-9kK]/g, '');
         if (valor.length > 9) valor = valor.slice(0, 9);
 
@@ -83,8 +83,8 @@ function Carrito({
         setRut(rutFormateado.toLowerCase());
     };
 
-    // VALIDACIÓN AL SALIR DEL CAMPO (RUT)
-    const validarRutAlSalir = () => {
+    // Comprobar el RUT al salir del input
+    const checkRut = () => {
         if (rut === '') {
             setErrorRut('');
             return;
@@ -92,15 +92,15 @@ function Carrito({
         const rutLimpio = rut.replace(/[^0-9kK]/g, '');
         const esRepetido = /^(.)\1+$/.test(rutLimpio.slice(0, -1));
 
-        if (!validarRutChileno(rut) || esRepetido || rutLimpio.length < 8) {
+        if (!validarRutChileno(rut) || rutLimpio.length < 8) {
             setErrorRut('RUT inválido');
         } else {
             setErrorRut('');
         }
     };
 
-    // VALIDACIÓN AL SALIR DEL CAMPO (CORREO)
-    const validarCorreoAlSalir = () => {
+    // Comprobar correo al salir del input
+    const checkCorreo = () => {
         if (correoLocal === '') {
             setErrorCorreo('');
             return;
@@ -113,8 +113,8 @@ function Carrito({
         }
     };
 
-    // VALIDACIÓN AL SALIR DEL CAMPO (FECHA)
-    const validarFechaAlSalir = () => {
+    // Comprobar edad al salir del input
+    const checkEdad = () => {
         if (fechaNacimiento === '') {
             setErrorEdad('');
             return;
@@ -126,8 +126,8 @@ function Carrito({
         }
     };
 
-    // VALIDACIÓN AL SALIR DEL CAMPO (TELEFONO)
-    const validarTelefonoAlSalir = () => {
+    // Comprobar teléfono al salir del input
+    const checkTelefono = () => {
         if (telefonoDigitos === '') {
             setErrorTelefono('');
             return;
@@ -138,30 +138,30 @@ function Carrito({
             setErrorTelefono('');
         }
     };
-
-    const handleTextoLimpio = (e, setEstado) => {
+    // Evitar que escriban números en el nombre/apellido
+    const limpiarTexto = (e, setEstado) => {
         const textoFiltrado = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
         setEstado(textoFiltrado);
     };
 
-    const handleTelefonoChange = (e) => {
+    const cambiarFono = (e) => {
         const valor = e.target.value.replace(/[^0-9]/g, '');
         setTelefonoDigitos(valor);
     };
 
-    const handleRegionChange = (e) => {
+    const Region = (e) => {
         const reg = e.target.value;
         setRegionSeleccionada(reg);
         setComunaSeleccionada(regionesChile[reg][0]);
     };
 
-    const handleMetodoEntregaChange = (e) => {
+    const cambiarEntrega = (e) => {
         const opcion = e.target.value;
         setMetodoEntrega(opcion);
-        setDeliveryChecked(opcion === 'despacho');
+        setconEnvio(opcion === 'despacho');
     };
-
-    const handleCheckoutFinal = (e) => {
+    // Al hacer click en finalizar la compra
+    const finalizarCompra = (e) => {
         e.preventDefault();
 
         if (metodoEntrega === 'despacho') {
@@ -174,13 +174,13 @@ function Carrito({
             setDireccion('Retiro en Oficina Central');
         }
 
-        validarRutAlSalir();
-        validarCorreoAlSalir();
-        validarTelefonoAlSalir();
-        validarFechaAlSalir();
+        checkRut();
+        checkCorreo();
+        checkTelefono();
+        checkEdad();
 
         if (!errorRut && !errorCorreo && !errorTelefono && !errorEdad && rut && correoLocal && telefonoDigitos && fechaNacimiento && aceptaTerminos) {
-            window.puntosDeEstaCompra = puntosEspaciales;
+            localStorage.setItem('puntos_Cyber', puntosEspaciales);
 
             onFinalizar({
                 nombreCompleto: `${nombre.trim()} ${apellido.trim()}`,
@@ -238,7 +238,7 @@ function Carrito({
                             </button>
                         </div>
                     ) : (
-                        <form onSubmit={handleCheckoutFinal} className="p-3 bg-secondary bg-opacity-10 rounded border border-secondary" style={{ fontSize: '0.8rem' }}>
+                        <form onSubmit={finalizarCompra} className="p-3 bg-secondary bg-opacity-10 rounded border border-secondary" style={{ fontSize: '0.8rem' }}>
 
                             <div className="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-3">
                                 <h6 className="text-info text-uppercase fw-bold m-0" style={{ fontSize: '0.8rem', letterSpacing: '0.5px' }}>Datos de Envío</h6>
@@ -250,31 +250,31 @@ function Carrito({
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Nombre:</label>
-                                    <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Juan" value={nombre} onChange={e => handleTextoLimpio(e, setNombre)} required />
+                                    <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Juan" value={nombre} onChange={e => limpiarTexto(e, setNombre)} required />
                                 </div>
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Apellido:</label>
-                                    <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Pérez" value={apellido} onChange={e => handleTextoLimpio(e, setApellido)} required />
+                                    <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej: Pérez" value={apellido} onChange={e => limpiarTexto(e, setApellido)} required />
                                 </div>
                             </div>
 
                             <div className="mb-2">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
-                                <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="12.345.678-9" value={rut} onChange={handleRutChange} onBlur={validarRutAlSalir} required />
+                                <input type="text" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="12.345.678-9" value={rut} onChange={cambiarRut} onBlur={checkRut} required />
                                 {errorRut && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorRut}</small>}
                             </div>
 
                             <div className="row g-2 mb-2">
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
-                                    <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="juan@correo.cl" value={correoLocal} onChange={e => setCorreoLocal(e.target.value)} onBlur={validarCorreoAlSalir} required />
+                                    <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="juan@correo.cl" value={correoLocal} onChange={e => setCorreoLocal(e.target.value)} onBlur={checkCorreo} required />
                                     {errorCorreo && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorCorreo}</small>}
                                 </div>
                                 <div className="col-6">
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Teléfono Móvil:</label>
                                     <div className="input-group input-group-sm">
                                         <span className="input-group-text bg-dark border-secondary text-white" style={{ fontSize: '12px' }}>+56 9</span>
-                                        <input type="tel" className="form-control bg-dark text-white border-secondary" placeholder="12345678" value={telefonoDigitos} onChange={handleTelefonoChange} onBlur={validarTelefonoAlSalir} maxLength="8" required />
+                                        <input type="tel" className="form-control bg-dark text-white border-secondary" placeholder="12345678" value={telefonoDigitos} onChange={cambiarFono} onBlur={checkTelefono} maxLength="8" required />
                                     </div>
                                     {errorTelefono && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorTelefono}</small>}
                                 </div>
@@ -282,13 +282,13 @@ function Carrito({
 
                             <div className="mb-3">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Fecha de Nacimiento:</label>
-                                <input type="date" className="form-control form-control-sm bg-dark text-white border-secondary" min={fechaMinima} max={fechaHoy} value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} onBlur={validarFechaAlSalir} required />
+                                <input type="date" className="form-control form-control-sm bg-dark text-white border-secondary" min={fechaMinima} max={fechaHoy} value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} onBlur={checkEdad} required />
                                 {errorEdad && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorEdad}</small>}
                             </div>
 
                             <div className="mb-3">
                                 <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Modalidad de Entrega:</label>
-                                <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={handleMetodoEntregaChange}>
+                                <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={cambiarEntrega}>
                                     <option value="retiro">Retiro en Tienda Local ($0)</option>
                                     <option value="despacho">Despacho a Domicilio</option>
                                 </select>
@@ -298,7 +298,7 @@ function Carrito({
                                     <div className="row g-2 mb-2">
                                         <div className="col-6">
                                             <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Región de Destino:</label>
-                                            <select className="form-select form-select-sm bg-dark text-white border-secondary" value={regionSeleccionada} onChange={handleRegionChange}>
+                                            <select className="form-select form-select-sm bg-dark text-white border-secondary" value={regionSeleccionada} onChange={Region}>
                                                 {Object.keys(regionesChile).map(reg => (
                                                     <option key={reg} value={reg}>{reg === 'Magallanes' ? 'Magallanes (Envío Local)' : `${reg} (Otras Regiones)`}</option>
                                                 ))}

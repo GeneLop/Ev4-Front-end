@@ -1,45 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
-// Importación de Componentes Globales
+// Importar los componentes
 import Navbar from './Componentes/Navbar';
 import Footer from './Componentes/Footer';
 
-// Importación de Vistas / Páginas
+// Importar las páginas
 import Inicio from './Paginas/Inicio';
 import Nosotros from './Paginas/Nosotros';
 import Contacto from './Paginas/Contacto';
 import Terminos from './Paginas/Terminos';
 import Manual from './Paginas/Manual';
 
-// Lógica Funcional Externa
+// Funciones de ayuda
 import { encriptarRut, guardarPedidoEnBD } from './funciones';
 
-// COMPONENTE MONITOR: 🌟 CAMBIO ALUMNO: Ya no apaga el admin al cambiar de página
+// Componente para vigilar las rutasa
 function MonitorDeRutas({ setAdminActivo }) {
   return null;
 }
 
 function App() {
-  // Estados de control general
+  // Estados de la aplicación
   const [mostrarModalExito, setMostrarModalExito] = useState(false);
   const [mensajeExito, setMensajeExito] = useState('');
   const [adminActivo, setAdminActivo] = useState(false);
   const [pestañaAdmin, setPestañaAdmin] = useState('usuarios');
   const [cargandoAPI, setCargandoAPI] = useState(true);
 
-  // 🌟 ESTADO ALUMNO: Controla si el Admin está mirando el panel o paseando por las páginas
+  // Controlar si se ve el panel de administración
   const [verPanelAdmin, setVerPanelAdmin] = useState(false);
 
   // Estados de Monedas
   const [monedaActiva, setMonedaActiva] = useState('CLP');
   const [valoresDivisas, setValoresDivisas] = useState({ uf: 1, eur: 1, utm: 1 });
 
-  // Estados del CRUD
-  const [registrosBase, setRegistrosBase] = useState([]);
-  const [inventarioProductos, setInventarioProductos] = useState([]);
+  // Estados de los datos (CRUD)
+  const [usuarios, setusuarios] = useState([]);
+  const [listaProductos, setlistaProductos] = useState([]);
 
-  // Estados para controlar el formulario de edición de productos
+  // Estados para el formulario de editar/añadir productos
   const [idProdEditando, setIdProdEditando] = useState(null);
   const [prodNombre, setProdNombre] = useState('');
   const [prodPrecio, setProdPrecio] = useState('');
@@ -47,26 +47,26 @@ function App() {
   const [prodDescripcion, setProdDescripcion] = useState('');
   const [prodImagen, setProdImagen] = useState('');
 
-  // Historial de pedidos cargados de la API
+  // Lista de pedidos guardados
   const [historialPedidos, setHistorialPedidos] = useState([]);
 
-  // Estados compartidos del Carrito de Compras
+  // Estados del carrito de compras
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
   const [verFormulario, setVerFormulario] = useState(false);
-  const [deliveryChecked, setDeliveryChecked] = useState(false);
+  const [conEnvio, setconEnvio] = useState(false);
   const [direccion, setDireccion] = useState('');
   const [rut, setRut] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [mensajeError, setMensajeError] = useState('');
 
-  // 1. Obtener valores de divisas actuales desde la API
+  //Cargar el valor de las monedas desde la API
   useEffect(() => {
     const obtenerDivisas = async () => {
       try {
         const res = await fetch('https://mindicador.cl/api');
         const datos = await res.json();
-        console.log("Respuesta de la API de divisas cargada con éxito:", datos);
+        console.log("anda api", datos);
         setValoresDivisas({
           uf: datos.uf.valor,
           eur: datos.euro.valor,
@@ -79,32 +79,31 @@ function App() {
     obtenerDivisas();
   }, []);
 
-  // 2. Cargar datos iniciales de Usuarios y Catálogo de Productos
+  //Cargar los usuarios y los productos iniciales
   useEffect(() => {
-    // Carga de usuarios locales
     const bdLocal = localStorage.getItem('astroshop_bd_usuarios');
     if (bdLocal) {
-      setRegistrosBase(JSON.parse(bdLocal));
+      setusuarios(JSON.parse(bdLocal));
     } else {
       const usuariosIniciales = [
         { id: "1", nombre: "James Hewstone", rut: "12.345.678-9", correo: "j.hewstone@profesor.cl", estado: "activo", passwordEncriptada: "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK" },
         { id: "2", nombre: "Antonia Astrea", rut: "20.441.302-K", correo: "antonia@explorador.cl", estado: "activo", passwordEncriptada: "$2a$12$X9vW2zQ1mN82P7bT5eO4jK3bH2gM" }
       ];
-      setRegistrosBase(usuariosIniciales);
+      setusuarios(usuariosIniciales);
       localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(usuariosIniciales));
     }
 
     // Carga de productos
     const prodLocal = localStorage.getItem('astroshop_bd_productos_v4');
     if (prodLocal) {
-      setInventarioProductos(JSON.parse(prodLocal));
+      setlistaProductos(JSON.parse(prodLocal));
       setCargandoAPI(false);
     } else {
       fetch("https://6a455557aab3faec3f69d15d.mockapi.io/Productos")
         .then(res => res.json())
         .then(datos => {
-          console.log("Catálogo cargado desde MockAPI:", datos);
-          setInventarioProductos(datos);
+          console.log("productos mockapi", datos);
+          setlistaProductos(datos);
           localStorage.setItem("astroshop_bd_productos_v4", JSON.stringify(datos));
           setCargandoAPI(false);
         })
@@ -115,7 +114,7 @@ function App() {
     }
   }, []);
 
-  // 3. Sincronizar pedidos de MockAPI al abrir esa sección del panel
+  //Traer los pedidos si el admin está activo
   useEffect(() => {
     if (adminActivo) {
       fetch("https://6a455557aab3faec3f69d15d.mockapi.io/pedidos")
@@ -128,35 +127,35 @@ function App() {
     }
   }, [adminActivo, pestañaAdmin]);
 
-  // Al cambiar el estado de adminActivo, automáticamente decidimos si mostramos el panel o no
+  // Cambiar la vista si cambia el estado del admin
   useEffect(() => {
     setVerPanelAdmin(adminActivo);
   }, [adminActivo]);
 
-  // Funciones auxiliares para guardar cambios en LocalStorage
+  // Funciones para actualizar LocalStorage
   const guardarUsuariosLocal = (nuevaLista) => {
-    setRegistrosBase(nuevaLista);
+    setusuarios(nuevaLista);
     localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
   };
 
-  const guardarProductosLocal = (nuevaLista) => {
-    setInventarioProductos(nuevaLista);
+  const guardarProductos = (nuevaLista) => {
+    setlistaProductos(nuevaLista);
     localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(nuevaLista));
   };
 
-  const handleAlternarEstadoUsuario = (id) => {
-    const actualizados = registrosBase.map(u =>
+  const cambiarEstadoUsuario = (id) => {
+    const actualizados = usuarios.map(u =>
       u.id === id ? { ...u, estado: u.estado === 'activo' ? 'inactivo' : 'activo' } : u
     );
     guardarUsuariosLocal(actualizados);
   };
 
-  const handleCancelarEdicion = () => {
+  const cancelarEdit = () => {
     setIdProdEditando(null);
     setProdNombre(''); setProdPrecio(''); setProdCategoria(''); setProdDescripcion(''); setProdImagen('');
   };
 
-  const handleGuardarProducto = (e) => {
+  const guardarProducto = (e) => {
     e.preventDefault();
 
     if (!prodCategoria) {
@@ -170,12 +169,12 @@ function App() {
       : "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400&auto=format&fit=crop";
 
     if (idProdEditando) {
-      const editados = inventarioProductos.map(p =>
+      const editados = listaProductos.map(p =>
         p.id === idProdEditando
           ? { ...p, nombre: prodNombre, precio: precioNum, categoria: prodCategoria, descripcion: prodDescripcion || p.descripcion, imagen: imagenUrl }
           : p
       );
-      guardarProductosLocal(editados);
+      guardarProductos(editados);
       setIdProdEditando(null);
       alert("Catálogo actualizado con éxito.");
     } else {
@@ -184,18 +183,17 @@ function App() {
         nombre: prodNombre,
         precio: precioNum,
         categoria: prodCategoria,
-        descripcion: prodDescripcion || "Sin descripción detallada disponible.",
+        descripcion: prodDescripcion || "Por favor, seleccione una categoría válida.",
         imagen: imagenUrl
       };
-      guardarProductosLocal([...inventarioProductos, nuevoProd]);
+      guardarProductos([...listaProductos, nuevoProd]);
       alert("Nuevo producto añadido con éxito.");
     }
 
     setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen(''); setProdCategoria('');
   };
 
-  // Funciones básicas para administrar el Carrito de compras
-  // En App.js, asegúrate de que agregarProducto esté así:
+  // Funciones del carrito de compras
   const agregarProducto = (producto) => {
     const encontrado = carrito.find(item => item.id === producto.id);
     if (encontrado) {
@@ -203,15 +201,10 @@ function App() {
         item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
       ));
     } else {
-      // Asegúrate de usar 'cantidad' (no 'quantity') para ser consistente
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
-    // Aseguramos que precio sea un número
     setTotal(prev => prev + Number(producto.precio));
   };
-
-  // Y en tu Navbar, asegúrate de pasar el total correctamente:
-  // <Navbar ... total={total} ... />
 
   const cambiarCantidad = (id, delta) => {
     const itemCarrito = carrito.find(item => item.id === id);
@@ -236,8 +229,8 @@ function App() {
     }
   };
 
-  // Función para procesar el pedido final hacia la API remota
-  const grabarPedido = async (datosCliente) => {
+  // Enviar el pedido al servidor remoto
+  const finalizarCompra = async (datosCliente) => {
     setMensajeError('');
 
     if (adminActivo) {
@@ -245,32 +238,32 @@ function App() {
       return;
     }
 
-    const costoEnvioFinal = deliveryChecked ? 2500 : 0;
+    const envio = conEnvio ? 2500 : 0;
     const rutEncriptado = encriptarRut(datosCliente.rutValidado);
 
-    const pedidoPayload = {
+    const datosPedido = {
       comprador_nombre: datosCliente.nombreCompleto,
       comprador_correo: datosCliente.correo,
       comprador_telefono: datosCliente.telefono,
       comprador_rut_aes: rutEncriptado,
       metodo_pago: datosCliente.metodoPago,
-      requiere_despacho: deliveryChecked,
+      requiere_despacho: conEnvio,
       domicilio_entrega: direccion,
       artículos_comprados: carrito.map((i) => {
         return { id: i.id, nombre: i.nombre, cantidad: i.cantidad };
       }),
       monto_neto_transaccion: total,
-      monto_total_pagado: total + costoEnvioFinal,
+      monto_total_pagado: total + envio,
       fecha_registro: new Date().toISOString()
     };
 
     try {
-      await guardarPedidoEnBD(pedidoPayload);
+      await guardarPedidoEnBD(datosPedido);
       setMensajeExito(`¡Gracias por tu compra en AstroShop!
 
 Hemos recibido tu pedido correctamente.
 
-Total Pagado: ${formatearPrecio(total + costoEnvioFinal)}
+Total Pagado: ${formatearPrecio(total + envio)}
 
 ¿Qué sigue ahora?
 - Recibirás un correo con el seguimiento de tus productos físicos.
@@ -286,7 +279,7 @@ Gracias por confiar en nosotros.`);
       setRut('');
       setFechaNacimiento('');
       setDireccion('');
-      setDeliveryChecked(false);
+      setconEnvio(false);
     } catch (err) {
       console.error(err);
       alert("Ocurrió un inconveniente al guardar tu compra: " + err.message);
@@ -311,7 +304,7 @@ Gracias por confiar en nosotros.`);
 
     return `$ ${Math.round(precioPesos).toLocaleString('es-CL')}`;
   };
-
+  // Contar cuántos productos hay en total en el carro
   const cantidadTotalItems = carrito.reduce((acumulado, item) => acumulado + item.cantidad, 0);
 
   if (cargandoAPI) {
@@ -346,8 +339,6 @@ Gracias por confiar en nosotros.`);
                   Compra realizada con éxito
                 </h5>
               </div>
-
-              {/* 🔥 SIN PRE (esto era lo que daba sensación “robot”) */}
               <div
                 className="modal-body"
                 style={{
@@ -385,8 +376,8 @@ Gracias por confiar en nosotros.`);
           cambiarCantidad={cambiarCantidad}
           verFormulario={verFormulario}
           setVerFormulario={setVerFormulario}
-          deliveryChecked={deliveryChecked}
-          setDeliveryChecked={setDeliveryChecked}
+          conEnvio={conEnvio}
+          setconEnvio={setconEnvio}
           direccion={direccion}
           setDireccion={setDireccion}
           rut={rut}
@@ -394,17 +385,16 @@ Gracias por confiar en nosotros.`);
           fechaNacimiento={fechaNacimiento}
           setFechaNacimiento={setFechaNacimiento}
           mensajeError={mensajeError}
-          onFinalizar={grabarPedido}
+          onFinalizar={finalizarCompra}
           adminActivo={adminActivo}
           setAdminActivo={setAdminActivo}
           monedaActiva={monedaActiva}
           setMonedaActiva={setMonedaActiva}
-          // 🌟 PASAMOS EL NUEVO CONTROLADOR DE VISTA AL NAVBAR
+
           verPanelAdmin={verPanelAdmin}
           setVerPanelAdmin={setVerPanelAdmin}
         />
 
-        {/* 🌟 CAMBIO ALUMNO: Si adminActivo Y verPanelAdmin son verdaderos, muestra las tablas, sino muestra las páginas normales */}
         {adminActivo && verPanelAdmin ? (
           <div className="bg-dark text-white flex-grow-1 p-5">
             <div className="container mt-4 bg-secondary bg-opacity-10 p-5 rounded border border-secondary shadow-sm">
@@ -445,7 +435,7 @@ Gracias por confiar en nosotros.`);
                           </tr>
                         </thead>
                         <tbody>
-                          {registrosBase.map(reg => (
+                          {usuarios.map(reg => (
                             <tr key={reg.id}>
                               <td className="text-warning fw-semibold">{reg.rut}</td>
                               <td className="text-white fw-medium">{reg.nombre}</td>
@@ -454,8 +444,8 @@ Gracias por confiar en nosotros.`);
                                 <div className="p-2 border border-secondary text-info font-monospace"
                                   style={{
                                     fontSize: '11px',
-                                    backgroundColor: '#1a1d20', // Un gris muy oscuro, NO negro
-                                    color: '#36d399',           // Un verde brillante para que se lea perfecto
+                                    backgroundColor: '#1a1d20',
+                                    color: '#36d399',
                                     wordBreak: 'break-all',
                                     borderRadius: '4px'
                                   }}>
@@ -468,7 +458,7 @@ Gracias por confiar en nosotros.`);
                                 </span>
                               </td>
                               <td className="text-center">
-                                <button className={`btn btn-xs w-100 ${reg.estado === 'activo' ? 'btn-outline-danger' : 'btn-success text-white'} py-1 px-2`} style={{ fontSize: '11px', fontWeight: '500' }} onClick={() => handleAlternarEstadoUsuario(reg.id)}>
+                                <button className={`btn btn-xs w-100 ${reg.estado === 'activo' ? 'btn-outline-danger' : 'btn-success text-white'} py-1 px-2`} style={{ fontSize: '11px', fontWeight: '500' }} onClick={() => cambiarEstadoUsuario(reg.id)}>
                                   {reg.estado === 'activo' ? 'Deshabilitar' : 'Habilitar'}
                                 </button>
                               </td>
@@ -487,7 +477,7 @@ Gracias por confiar en nosotros.`);
                     <h4 className="h5 text-warning text-uppercase fw-bold mb-4">
                       {idProdEditando ? 'Modificar Producto' : 'Añadir al Catálogo'}
                     </h4>
-                    <form onSubmit={handleGuardarProducto}>
+                    <form onSubmit={guardarProducto}>
                       <div className="mb-3">
                         <label className="form-label text-white small">Nombre del Artículo:</label>
                         <input type="text" className="form-control bg-dark text-white border-secondary" value={prodNombre} onChange={e => setProdNombre(e.target.value)} required />
@@ -519,7 +509,7 @@ Gracias por confiar en nosotros.`);
                           {idProdEditando ? 'Actualizar' : 'Añadir Producto'}
                         </button>
                         {idProdEditando && (
-                          <button type="button" className="btn btn-outline-secondary fw-bold text-uppercase py-2 px-3 text-white" style={{ fontSize: '12px' }} onClick={handleCancelarEdicion}>
+                          <button type="button" className="btn btn-outline-secondary fw-bold text-uppercase py-2 px-3 text-white" style={{ fontSize: '12px' }} onClick={cancelarEdit}>
                             Cancelar
                           </button>
                         )}
@@ -540,7 +530,7 @@ Gracias por confiar en nosotros.`);
                           </tr>
                         </thead>
                         <tbody>
-                          {inventarioProductos.map(prod => (
+                          {listaProductos.map(prod => (
                             <tr key={prod.id}>
                               <td className="text-white font-monospace small">{prod.id}</td>
                               <td className="fw-semibold text-white">{prod.nombre}</td>
@@ -553,7 +543,7 @@ Gracias por confiar en nosotros.`);
                                   style={{ fontSize: '11px' }}
                                   onClick={() => {
                                     if (window.confirm(`¿Estás seguro de que deseas eliminar el producto: "${prod.nombre}"?`)) {
-                                      guardarProductosLocal(inventarioProductos.filter(p => p.id !== prod.id));
+                                      guardarProductos(listaProductos.filter(p => p.id !== prod.id));
                                     }
                                   }}
                                 >
@@ -649,9 +639,9 @@ Gracias por confiar en nosotros.`);
             <Routes>
               <Route path="/" element={
                 <Inicio
-                  productosTelescopios={inventarioProductos.filter((p) => { return p.categoria === 'telescopios'; })}
-                  productosCursos={inventarioProductos.filter((p) => { return p.categoria === 'cursos'; })}
-                  productosExperiencias={inventarioProductos.filter((p) => { return p.categoria === 'experiencias'; })}
+                  productosTelescopios={listaProductos.filter((p) => { return p.categoria === 'telescopios'; })}
+                  productosCursos={listaProductos.filter((p) => { return p.categoria === 'cursos'; })}
+                  productosExperiencias={listaProductos.filter((p) => { return p.categoria === 'experiencias'; })}
                   agregarProducto={agregarProducto}
                   formatearPrecio={formatearPrecio}
                 />

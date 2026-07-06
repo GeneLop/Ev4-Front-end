@@ -13,8 +13,8 @@ function Navbar({
     cambiarCantidad,
     verFormulario,
     setVerFormulario,
-    deliveryChecked,
-    setDeliveryChecked,
+    conEnvio,
+    setconEnvio,
     direccion,
     setDireccion,
     rut,
@@ -138,8 +138,8 @@ function Navbar({
                                         cambiarCantidad={cambiarCantidad}
                                         verFormulario={verFormulario}
                                         setVerFormulario={setVerFormulario}
-                                        deliveryChecked={deliveryChecked}
-                                        setDeliveryChecked={setDeliveryChecked}
+                                        conEnvio={conEnvio}
+                                        setconEnvio={setconEnvio}
                                         direccion={direccion}
                                         setDireccion={setDireccion}
                                         rut={rut}
