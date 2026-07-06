@@ -25,6 +25,7 @@ function Carrito({
     const [correoLocal, setCorreoLocal] = useState('');
     const [telefonoDigitos, setTelefonoDigitos] = useState('');
     const [metodoEntrega, setMetodoEntrega] = useState('retiro');
+    const [metodoPago, setMetodoPago] = useState('tarjeta');
     const [aceptaTerminos, setAceptaTerminos] = useState(false);
     const [regionSeleccionada, setRegionSeleccionada] = useState('Magallanes');
     const [comunaSeleccionada, setComunaSeleccionada] = useState('Punta Arenas');
@@ -184,7 +185,8 @@ function Carrito({
                 nombreCompleto: `${nombre.trim()} ${apellido.trim()}`,
                 correo: correoLocal,
                 telefono: "+56 9 " + telefonoDigitos,
-                rutValidado: rut
+                rutValidado: rut,
+                metodoPago
             });
         } else {
             alert("Por favor, complete correctamente todos los campos obligatorios.");
@@ -288,7 +290,6 @@ function Carrito({
                                     <option value="despacho">Despacho a Domicilio</option>
                                 </select>
                             </div>
-
                             {metodoEntrega === 'despacho' && (
                                 <div className="mb-3 p-2 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-50">
                                     <div className="row g-2 mb-2">
@@ -314,6 +315,22 @@ function Carrito({
                                     {errorDespacho && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorDespacho}</small>}
                                 </div>
                             )}
+                            <div className="mb-3">
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>
+                                    Método de Pago:
+                                </label>
+
+                                <select
+                                    className="form-select form-select-sm bg-dark text-white border-secondary"
+                                    value={metodoPago}
+                                    onChange={(e) => setMetodoPago(e.target.value)}
+                                >
+                                    <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                                    <option value="transferencia">Transferencia Bancaria</option>
+                                    <option value="mercadopago">Mercado Pago</option>
+                                    <option value="paypal">PayPal</option>
+                                </select>
+                            </div>
 
                             <div className="form-check mb-3">
                                 <input className="form-check-input" type="checkbox" id="terms" checked={aceptaTerminos} onChange={e => setAceptaTerminos(e.target.checked)} required />

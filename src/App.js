@@ -251,6 +251,7 @@ function App() {
       comprador_correo: datosCliente.correo,
       comprador_telefono: datosCliente.telefono,
       comprador_rut_aes: rutEncriptado,
+      metodo_pago: datosCliente.metodoPago,
       requiere_despacho: deliveryChecked,
       domicilio_entrega: direccion,
       artículos_comprados: carrito.map((i) => {
@@ -279,9 +280,21 @@ function App() {
   };
 
   const formatearPrecio = (precioPesos) => {
-    if (monedaActiva === 'UF') return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
-    if (monedaActiva === 'EUR') return `€ ${(precioPesos / valoresDivisas.eur).toFixed(2)}`;
-    if (monedaActiva === 'UTM') return `${(precioPesos / valoresDivisas.utm).toFixed(2)} UTM`;
+    console.log("Moneda:", monedaActiva);
+    console.log("Valores:", valoresDivisas);
+
+    if (monedaActiva === 'UF') {
+      return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
+    }
+
+    if (monedaActiva === 'EUR') {
+      return `€ ${(precioPesos / valoresDivisas.eur).toFixed(2)}`;
+    }
+
+    if (monedaActiva === 'UTM') {
+      return `${(precioPesos / valoresDivisas.utm).toFixed(2)} UTM`;
+    }
+
     return `$ ${Math.round(precioPesos).toLocaleString('es-CL')}`;
   };
 
@@ -339,7 +352,7 @@ function App() {
 
               <div className="border-bottom border-secondary pb-3 mb-4">
                 <h2 className="text-info text-uppercase fw-bold h4 m-0">Panel de Administración</h2>
-                <p className="text-white-50 small m-0">Control de inventario, usuarios y registro de ventas</p>
+                <p className="text-white small m-0">Control de inventario, usuarios y registro de ventas</p>
               </div>
 
               <div className="btn-group mb-4" role="group">
@@ -377,7 +390,7 @@ function App() {
                             <tr key={reg.id}>
                               <td className="text-warning fw-semibold">{reg.rut}</td>
                               <td className="text-white fw-medium">{reg.nombre}</td>
-                              <td className="text-white-50">{reg.correo}</td>
+                              <td className="text-white">{reg.correo}</td>
                               <td>
                                 <div className="p-2 border border-secondary text-info font-monospace"
                                   style={{
@@ -502,7 +515,7 @@ function App() {
                   <div className="col-12">
                     <h4 className="h5 text-warning text-uppercase fw-bold mb-4">Registro de Ventas</h4>
                     {historialPedidos.length === 0 ? (
-                      <p className="text-white-50 bg-dark p-4 rounded text-center small border border-secondary border-opacity-25">
+                      <p className="text-white bg-dark p-4 rounded text-center small border border-secondary border-opacity-25">
                         No se registran transacciones almacenadas en el servidor.
                       </p>
                     ) : (
@@ -515,7 +528,8 @@ function App() {
                               <th>Cliente / Contacto</th>
                               <th>RUT</th>
                               <th>Artículos</th>
-                              <th>Destino de Entrega</th>
+                              <th>Pago</th>
+                              <th>Tipo de entrega</th>
                               <th className="text-end">Total</th>
                             </tr>
                           </thead>
@@ -523,23 +537,34 @@ function App() {
                             {historialPedidos.map((pedido) => (
                               <tr key={pedido.id}>
                                 <td className="text-info font-monospace fw-bold">#{pedido.id}</td>
-                                <td className="text-white-50">{pedido.fecha_registro ? pedido.fecha_registro.split('T')[0] : 'S/F'}</td>
+                                <td className="text-white">{pedido.fecha_registro ? pedido.fecha_registro.split('T')[0] : 'S/F'}</td>
                                 <td>
-                                  <div className="text-white fw-medium">{pedido.comprador_nombre || 'Cliente General'}</div>
-                                  <div className="text-info small">{pedido.comprador_correo || 'Sin correo'}</div>
-                                  <div className="text-white-50 small" style={{ fontSize: '11px' }}>{pedido.comprador_telefono || 'Sin teléfono'}</div>
+                                  <div className="text-white fw-medium">
+                                    {pedido.comprador_nombre || "Cliente General"}
+                                  </div>
+
+                                  <div className="small text-white">
+                                    Correo: •••••••••••
+                                  </div>
+
+                                  <div className="small text-white">
+                                    Teléfono: ••••••••
+                                  </div>
                                 </td>
-                                <td className="font-monospace text-white-50 small text-truncate" style={{ maxWidth: '120px' }} title={pedido.comprador_rut_aes}>
+                                <td className="font-monospace text-white small text-truncate" style={{ maxWidth: '120px' }} title={pedido.comprador_rut_aes}>
                                   {pedido.comprador_rut_aes}
                                 </td>
                                 <td>
                                   {pedido.artículos_comprados && pedido.artículos_comprados.map((art, idx) => (
-                                    <div key={idx} className="small text-white-50">
+                                    <div key={idx} className="small text-white">
                                       <span className="text-warning fw-semibold">{art.cantidad}x</span> {art.nombre}
                                     </div>
                                   ))}
                                 </td>
-                                <td className="small text-white-50" style={{ maxWidth: '200px' }}>
+                                <td className="text-white">
+                                  {pedido.metodo_pago || "No registrado"}
+                                </td>
+                                <td className="small text-white" style={{ maxWidth: '200px' }}>
                                   <span className={`badge ${pedido.requiere_despacho ? 'bg-primary' : 'bg-secondary'} text-white d-inline-block mb-1`} style={{ fontSize: '9px' }}>
                                     {pedido.requiere_despacho ? 'Despacho' : 'Retiro'}
                                   </span>
