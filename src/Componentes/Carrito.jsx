@@ -25,6 +25,7 @@ function Carrito({
     const [apellido, setApellido] = useState('');
     const [correoLocal, setCorreoLocal] = useState('');
     const [telefono, setTelefono] = useState('');
+    const [edad, setEdad] = useState('');
     const [metodoEntrega, setMetodoEntrega] = useState('retiro');
     const [metodoPago, setMetodoPago] = useState('tarjeta');
     const [aceptaTerminos, setAceptaTerminos] = useState(false);
@@ -117,9 +118,15 @@ function Carrito({
     const checkEdad = () => {
         if (fechaNacimiento === '') {
             setErrorEdad('');
+            setEdad('');
             return;
         }
-        if (verificarEdad(fechaNacimiento) < 18) {
+
+        const años = verificarEdad(fechaNacimiento);
+
+        setEdad(años);
+
+        if (años < 18) {
             setErrorEdad('Debe ser mayor de 18 años');
         } else {
             setErrorEdad('');
@@ -281,9 +288,32 @@ function Carrito({
                             </div>
 
                             <div className="mb-3">
-                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Fecha de Nacimiento:</label>
-                                <input type="date" className="form-control form-control-sm bg-dark text-white border-secondary" min={fechaMinima} max={fechaHoy} value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} onBlur={checkEdad} required />
-                                {errorEdad && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorEdad}</small>}
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>
+                                    Fecha de Nacimiento:
+                                </label>
+
+                                <input
+                                    type="date"
+                                    className="form-control form-control-sm bg-dark text-white border-secondary"
+                                    min={fechaMinima}
+                                    max={fechaHoy}
+                                    value={fechaNacimiento}
+                                    onChange={e => setFechaNacimiento(e.target.value)}
+                                    onBlur={checkEdad}
+                                    required
+                                />
+
+                                {edad !== '' && (
+                                    <small className="text-info d-block mt-1" style={{ fontSize: '11px' }}>
+                                        Edad: {edad} años
+                                    </small>
+                                )}
+
+                                {errorEdad && (
+                                    <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>
+                                        {errorEdad}
+                                    </small>
+                                )}
                             </div>
 
                             <div className="mb-3">

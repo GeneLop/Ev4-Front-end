@@ -58,6 +58,7 @@ function App() {
   const [direccion, setDireccion] = useState('');
   const [rut, setRut] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [edad, setEdad] = useState('');
   const [mensajeError, setMensajeError] = useState('');
 
   //Cargar el valor de las monedas desde la API
