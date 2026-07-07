@@ -52,11 +52,11 @@ function Terminos() {
             {(estiloActivo === 'todos' || estiloActivo === 'bootstrap') && (
                 <div className="mb-5 animate-fade-in">
                     <span className="badge bg-primary mb-2">Bootstrap</span>
-                    <div className="alert border-primary text-white p-4 rounded-3" style={{ backgroundColor: '#1e2125' }}>
+                    <div className="alert p-4 rounded-3 border" style={{ backgroundColor: '#0b132b', borderColor: '#0d6efd' }}>
                         <h2 className="h6 fw-bold text-primary text-uppercase mb-3" style={{ letterSpacing: '0.5px' }}>
                             1. Registro de Usuarios y Protección de Datos Personales
                         </h2>
-                        <p className="small m-0 lh-base" style={{ color: '#f8fafc' }}>
+                        <p className="small m-0 lh-base text-white">
                             De conformidad con la Ley Nº 19.628 sobre Protección de la Vida Privada, los datos ingresados en los formularios de registro (tales como Nombre Completo, RUT, Dirección y Correo Electrónico) serán utilizados exclusivamente para validar los accesos al sistema informático y procesar correctamente las órdenes de compra. El usuario garantiza la total autenticidad de los datos provistos y es el único responsable de mantener la confidencialidad de sus credenciales de acceso. La cuenta de usuario es estrictamente personal e intransferible.
                         </p>
                     </div>
@@ -66,11 +66,11 @@ function Terminos() {
             {(estiloActivo === 'todos' || estiloActivo === 'materialize') && (
                 <div className="mb-5 animate-fade-in">
                     <span className="badge mb-2" style={{ backgroundColor: '#ee6e73' }}>Materialize</span>
-                    <div className="p-4 border-0" style={{ backgroundColor: '#1a1a1a', borderLeft: '5px solid #ee6e73', borderRadius: '0px', boxShadow: '0 4px 10px 0 rgba(0,0,0,0.5), 0 4px 20px 0 rgba(0,0,0,0.3)' }}>
+                    <div className="p-4 border-0" style={{ backgroundColor: '#1a1a1a', borderLeft: '5px solid #ee6e73', borderRadius: '0px', boxShadow: '0 15px 35px rgba(0, 0, 0, 0.8)' }}>
                         <h2 className="fw-bold text-uppercase mb-3" style={{ color: '#ee6e73', fontSize: '0.875rem', letterSpacing: '1px' }}>
                             2. Condiciones de Logística, Despacho y Entrega
                         </h2>
-                        <p className="small m-0 lh-lg" style={{ color: '#e0e0e0' }}>
+                        <p className="small m-0 lh-lg text-white">
                             Todas las compras quedan estrictamente sujetas a la disponibilidad de stock del inventario centralizado. Los costos de envío calculados se sumarán de manera transparente al valor neto de la transacción antes de procesar el pago. Los plazos estimados rigen a partir de la confirmación bancaria del pago. <strong>Nota geográfica:</strong> Para la Región de Magallanes y zonas extremas, los tiempos finales de distribución pueden presentar variaciones debido a retrasos logísticos derivados de factores climáticos adversos o conectividad de transporte, lo cual será debidamente notificado.
                         </p>
                     </div>
@@ -80,11 +80,11 @@ function Terminos() {
             {(estiloActivo === 'todos' || estiloActivo === 'bulma') && (
                 <div className="mb-5 animate-fade-in">
                     <span className="badge mb-2" style={{ backgroundColor: '#48c774' }}>Bulma</span>
-                    <div className="overflow-hidden border-0 mb-3" style={{ borderRadius: '4px', backgroundColor: '#202324' }}>
+                    <div className="overflow-hidden border-0 mb-3" style={{ borderRadius: '4px', backgroundColor: '#0b1a12' }}>
                         <div className="px-4 py-2 fw-bold text-white small text-uppercase" style={{ backgroundColor: '#48c774', letterSpacing: '0.5px' }}>
                             3. Políticas de Garantías, Cambios y Devoluciones Técnicas
                         </div>
-                        <div className="p-4 border-start border-success border-opacity-50" style={{ fontSize: '0.85rem', color: '#b5b5b5', lineHeight: '1.6' }}>
+                        <div className="p-4 border-start border-3 text-white" style={{ fontSize: '0.85rem', lineHeight: '1.6', borderColor: '#48c774' }}>
                             Los productos de hardware y equipamiento comercializados cuentan con la garantía legal de seis meses estipulada en la Ley Nº 19.496 sobre Protección de los Derechos de los Consumidores. Los cambios o solicitudes de devolución por fallas demostrables de fabricación exigen la presentación obligatoria de la boleta, factura o comprobante de compra respectivo. Esta garantía técnica no cubrirá, bajo ninguna circunstancia, daños provocados por el desarme no autorizado, mala manipulación o el quiebre accidental de componentes ópticos/electrónicos por parte del usuario.
                         </div>
                     </div>
