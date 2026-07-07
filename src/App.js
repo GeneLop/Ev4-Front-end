@@ -574,7 +574,7 @@ Gracias por confiar en nosotros.`);
                               <th>Artículos</th>
                               <th>Pago</th>
                               <th>Tipo de entrega</th>
-                              <th className="text-end text-yellow-500">Total</th>
+                              <th className="text-end text-white">Total</th>
                             </tr>
                           </thead>
                           <tbody>
