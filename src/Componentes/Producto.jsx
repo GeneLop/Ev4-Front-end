@@ -1,4 +1,3 @@
-// src/Componentes/Producto.jsx
 import React, { useState } from 'react';
 
 function Producto({ p, onAgregar, formatearPrecio }) {
@@ -60,16 +59,14 @@ function Producto({ p, onAgregar, formatearPrecio }) {
                     <div className="position-absolute p-4 text-white border border-info"
                         style={{
                             top: 0, left: 0, right: 0, bottom: 0,
-                            // Opacidad muy alta (0.92) para que el blanco de la letra sea casi puro
                             backgroundColor: 'rgba(44, 49, 58, 0.92)',
-                            // Desenfoque casi imperceptible para que el ojo detecte el material, no la distorsión
                             backdropFilter: 'blur(2px)',
                             zIndex: '10',
                             overflowY: 'auto'
                         }}>
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h6 className="text-info text-uppercase fw-bold m-0">Especificaciones</h6>
-                            <button className="btn btn-sm btn-outline-danger" onClick={() => setVerTecnico(false)}>✕</button>
+                            <button className="btn btn-sm btn-outline-danger" onClick={() => setVerTecnico(false)}><i className="bi bi-x-lg"></i></button>
                         </div>
                         <div className="small" style={{ whiteSpace: 'pre-line' }}>
                             {p.descripcion.split('\n\n').slice(1).join('\n\n')}

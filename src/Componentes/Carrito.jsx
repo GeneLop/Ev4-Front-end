@@ -20,7 +20,7 @@ function Carrito({
     setFechaNacimiento,
     onFinalizar
 }) {
-    // Variables de los inputs
+    // Variables
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [correoLocal, setCorreoLocal] = useState('');
@@ -50,19 +50,19 @@ function Carrito({
             costoDespacho = 15000;
         }
     }
-    // Regiones y comunas para el select
+    // Regiones y comunas
     const regionesChile = {
         "Magallanes": ["Punta Arenas", "Puerto Natales", "Porvenir", "Cabo de Hornos"],
         "Metropolitana": ["Santiago", "Providencia", "Las Condes", "Maipú", "Ñuñoa"],
         "Valparaíso": ["Valparaíso", "Viña del Mar", "Quilpué", "Villa Alemana"],
         "Biobío": ["Concepción", "Talcahuano", "San Pedro de la Paz", "Chillán"]
     };
-    // Calcular puntos (1% del total)
+    // Calcular puntos 
     useEffect(() => {
         setPuntosEspaciales(Math.floor(total * 0.01));
     }, [total]);
 
-    // Función para poner los puntos y guion en el RUT al escribir
+    // Función para poner los puntos y guion al rut
     const cambiarRut = (e) => {
         let valor = e.target.value.replace(/[^0-9kK]/g, '');
         if (valor.length > 9) valor = valor.slice(0, 9);
@@ -84,7 +84,7 @@ function Carrito({
         setRut(rutFormateado.toLowerCase());
     };
 
-    // Comprobar el RUT al salir del input
+    // Comprobar el RUT 
     const checkRut = () => {
         if (rut === '') {
             setErrorRut('');
@@ -100,7 +100,7 @@ function Carrito({
         }
     };
 
-    // Comprobar correo al salir del input
+    // Comprobar correo
     const checkCorreo = () => {
         if (correoLocal === '') {
             setErrorCorreo('');
@@ -114,7 +114,7 @@ function Carrito({
         }
     };
 
-    // Comprobar edad al salir del input
+    // Comprobar edad 
     const checkEdad = () => {
         if (fechaNacimiento === '') {
             setErrorEdad('');
@@ -133,7 +133,7 @@ function Carrito({
         }
     };
 
-    // Comprobar teléfono al salir del input
+    // Comprobar teléfono
     const checkTelefono = () => {
         if (telefono === '') {
             setErrorTelefono('');
@@ -145,7 +145,7 @@ function Carrito({
             setErrorTelefono('');
         }
     };
-    // Evitar que escriban números en el nombre/apellido
+    // para validar nombre
     const limpiarTexto = (e, setEstado) => {
         const textoFiltrado = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
         setEstado(textoFiltrado);
@@ -167,7 +167,7 @@ function Carrito({
         setMetodoEntrega(opcion);
         setconEnvio(opcion === 'despacho');
     };
-    // Al hacer click en finalizar la compra
+    //cuando se hace click en finalizar la compra
     const finalizarCompra = (e) => {
         e.preventDefault();
 
@@ -207,12 +207,16 @@ function Carrito({
     return (
         <div className="p-4 bg-dark text-white rounded border border-secondary shadow-lg" style={{ width: '550px', maxHeight: '580px', overflowY: 'auto' }}>
             <h5 className="text-warning text-uppercase fw-bold border-bottom border-secondary pb-2 mb-3 d-flex justify-content-between align-items-center" style={{ fontSize: '1.1rem' }}>
-                <span>Mi Carrito</span>
+                <span>
+                    <i className="bi bi-cart3 me-2"></i>
+                    Mi Carrito
+                </span>
                 <span className="text-white small fw-normal" style={{ fontSize: '0.8rem' }}>({carrito.length} ítems)</span>
             </h5>
 
             {carrito.length === 0 ? (
-                <p className="text-center text-white my-4 small">Carrito vacío.</p>
+                <p className="text-center text-white my-4 small"><i className="bi bi-cart-x fs-3 d-block mb-2"></i>
+                    Tu carrito se encuentra vacío.</p>
             ) : (
                 <div>
                     <div className="mb-3">
@@ -228,7 +232,7 @@ function Carrito({
                                     <button type="button" className="btn btn-sm btn-outline-light py-0 px-2" onClick={() => cambiarCantidad(item.id, -1)}>-</button>
                                     <span className="fw-semibold">{item.cantidad}</span>
                                     <button type="button" className="btn btn-sm btn-outline-light py-0 px-2" onClick={() => cambiarCantidad(item.id, 1)}>+</button>
-                                    <button type="button" className="btn btn-sm btn-outline-danger py-0 px-2 ms-1" onClick={() => eliminarProducto(item.id)}>✕</button>
+                                    <button type="button" className="btn btn-sm btn-outline-danger py-0 px-2 ms-1" onClick={() => eliminarProducto(item.id)}><i className="bi bi-trash3"></i></button>
                                 </div>
                             </div>
                         ))}
@@ -241,6 +245,7 @@ function Carrito({
                                 <span className="text-info fw-bold fs-5" style={{ letterSpacing: '0.5px' }}>{formatearPrecio(total)}</span>
                             </div>
                             <button type="button" className="btn btn-warning w-100 fw-bold py-2 text-uppercase" style={{ fontSize: '0.85rem', letterSpacing: '0.5px' }} onClick={() => setVerFormulario(true)}>
+                                <i className="bi bi-credit-card me-2"></i>
                                 Pagar
                             </button>
                         </div>
@@ -248,9 +253,13 @@ function Carrito({
                         <form onSubmit={finalizarCompra} className="p-3 bg-secondary bg-opacity-10 rounded border border-secondary" style={{ fontSize: '0.8rem' }}>
 
                             <div className="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-3">
-                                <h6 className="text-info text-uppercase fw-bold m-0" style={{ fontSize: '0.8rem', letterSpacing: '0.5px' }}>Datos de Envío</h6>
+                                <h6 className="text-info text-uppercase fw-bold d-flex align-items-center gap-2">
+                                    <i className="bi bi-truck"></i>
+                                    Datos de Envío
+                                </h6>
                                 <button type="button" className="btn btn-xs btn-outline-light py-1 px-2 fw-semibold" style={{ fontSize: '10px', textTransform: 'uppercase' }} onClick={() => setVerFormulario(false)}>
-                                    ← Volver al Carrito
+                                    <i className="bi bi-arrow-left me-1"></i>
+                                    Volver al Carrito
                                 </button>
                             </div>
 
@@ -317,7 +326,10 @@ function Carrito({
                             </div>
 
                             <div className="mb-3">
-                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Modalidad de Entrega:</label>
+                                <label className="text-white d-block mb-1">
+                                    <i className="bi bi-box-seam me-1"></i>
+                                    Modalidad de Entrega:
+                                </label>
                                 <select className="form-select form-select-sm bg-dark text-white border-secondary" value={metodoEntrega} onChange={cambiarEntrega}>
                                     <option value="retiro">Retiro en Tienda Local ($0)</option>
                                     <option value="despacho">Despacho a Domicilio</option>
@@ -349,7 +361,8 @@ function Carrito({
                                 </div>
                             )}
                             <div className="mb-3">
-                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>
+                                <label className="text-white d-block mb-1">
+                                    <i className="bi bi-wallet2 me-1"></i>
                                     Método de Pago:
                                 </label>
 

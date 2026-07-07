@@ -1,4 +1,3 @@
-// src/Paginas/Contacto.jsx
 import React, { useState, useEffect } from 'react';
 
 function Contacto() {
@@ -44,10 +43,10 @@ function Contacto() {
 
     return (
         <div className="container py-5 text-white animate-fade-in">
-            {/* 1. ENCABEZADO PRINCIPAL */}
             <div className="row align-items-center mb-5 pb-5 border-bottom border-secondary border-opacity-25">
                 <div className="col-lg-4 mb-4 mb-lg-0">
-                    <h2 className="text-info text-uppercase fw-black display-4 mb-0" style={{ letterSpacing: '-1px', lineHeight: '1.1' }}>
+                    <h2 className="text-info text-uppercase fw-black display-4 mb-0">
+                        <i className="bi bi-headset me-2"></i>
                         Canales de<br />Contacto
                     </h2>
                     <div className="bg-info mt-3" style={{ height: '4px', width: '50px' }}></div>
@@ -59,10 +58,10 @@ function Contacto() {
                 </div>
             </div>
 
-            {/* Distribución de Paneles Estilo Control Técnico */}
+
             <div className="row g-4 align-items-stretch">
 
-                {/* COLUMNA 1: FORMULARIO */}
+                {/* FORMULARIO */}
                 <div className="col-lg-5">
                     <div className="p-4 rounded-4 h-100 shadow-lg" style={{ backgroundColor: '#2c313a', borderLeft: '6px solid #0dcaf0' }}>
                         <h3 className="h5 text-white text-uppercase fw-bold mb-4" style={{ letterSpacing: '0.5px' }}>Contacto</h3>
@@ -93,7 +92,7 @@ function Contacto() {
                     </div>
                 </div>
 
-                {/* COLUMNA 2: INFORMACIÓN Y MAPA */}
+                {/*INFORMACIÓN Y MAPA */}
                 <div className="col-lg-7 d-flex flex-column gap-4">
                     <div className="p-4 rounded-4 shadow-lg" style={{ backgroundColor: '#2c313a', borderLeft: '6px solid #0dcaf0' }}>
                         <div className="row g-3">

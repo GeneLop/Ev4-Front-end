@@ -9,8 +9,6 @@ function Banner() {
                 backgroundPosition: 'center',
                 borderBottom: '3px solid #0dcaf0'
             }}>
-
-            {/* Contenido del Banner */}
             <div className="col-md-6 p-lg-5 mx-auto my-5 position-relative" style={{ zIndex: 2 }}>
                 <h1 className="display-3 fw-bold text-uppercase tracking-tight"
                     style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>

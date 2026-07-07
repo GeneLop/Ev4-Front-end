@@ -1,4 +1,3 @@
-// src/Paginas/Inicio.jsx
 import React, { useState, useEffect } from 'react';
 import Banner from '../Componentes/Banner';
 import Producto from '../Componentes/Producto';
@@ -8,15 +7,15 @@ function Inicio({
     productosCursos,
     productosExperiencias,
     agregarProducto,
-    formatearPrecio // 🌟 RECIBIMOS LA FUNCIÓN DE DIVISAS GLOBAL DESDE APP.JSX
+    formatearPrecio
 }) {
     const [filtroCategoria, setFiltroCategoria] = useState('todo');
 
-    // Estados para la foto del día de la NASA
+
     const [fotoNasa, setFotoNasa] = useState(null);
     const [cargandoNasa, setCargandoNasa] = useState(true);
 
-    // Llamada automática a la API pública de la NASA (APOD)
+    // API NASA 
     useEffect(() => {
         fetch('https://api.nasa.gov/planetary/apod?api_key=Q369KcbGyQmPIGVAPg2MLWKEUtbG4gxZ46z2gahO')
             .then((res) => res.json())
@@ -30,7 +29,6 @@ function Inicio({
             });
     }, []);
 
-    // Tomamos solo dos productos de referencia para el panel compacto
     const favoritosComunidad = [
         ...productosTelescopios.slice(0, 1),
         ...productosCursos.slice(0, 1)
@@ -40,7 +38,6 @@ function Inicio({
         <div className="bg-dark min-h-screen text-white">
             <Banner />
 
-            {/* Carrusel Automático Corregido con data-bs-ride */}
             <div id="carruselAstronomia" className="carousel slide shadow-lg border-bottom border-info" data-bs-ride="carousel">
                 <div className="carousel-indicators">
                     <button type="button" data-bs-target="#carruselAstronomia" data-bs-slide-to="0" className="active"></button>
@@ -112,7 +109,7 @@ function Inicio({
                 </button>
             </div>
 
-            {/* Colapsable Informativo Original */}
+            {/* Colapsable Informativo */}
             <div className="container mt-4">
                 <button className="btn btn-sm btn-outline-info w-100 fw-bold text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#infoDespachoAstronomia">
                     ¿Por qué elegir AstroShop? Conoce nuestros beneficios
@@ -126,11 +123,11 @@ function Inicio({
                 </div>
             </div>
 
-            {/* LOS MÁS VALORADOS CON ENLACES INTELIGENTES */}
-            {/* LOS MÁS VALORADOS - ESTILO CRISTAL Y LUZ */}
+            {/* Aqui deje los mas valorados */}
+
             {filtroCategoria === 'todo' && favoritosComunidad.length > 0 && (
                 <div className="container mt-5">
-                    {/* Usamos 'bg-light' con opacidad 'bg-opacity-10' para crear un efecto de vidrio sutil */}
+
                     <div className="p-4 p-md-5 rounded-4 border border-white border-opacity-10 shadow-lg"
                         style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
 
@@ -148,7 +145,7 @@ function Inicio({
 
                                         return (
                                             <div key={`fav-mini-${prod.id}`} className="col-12 col-md-6">
-                                                {/* Tarjeta con fondo casi transparente, se separa del fondo por su propio borde */}
+
                                                 <div className="d-flex align-items-center p-3 rounded-3 border border-white border-opacity-10 h-100"
                                                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
 
@@ -184,15 +181,14 @@ function Inicio({
                 </div>
             )}
 
-            {/* Catálogo en Ancho Completo */}
             <main className="container py-5" id="carta-productos">
                 <div className="text-center mb-5">
                     <h2 className="display-6 fw-bold text-uppercase m-0">Nuestro Catálogo</h2>
                     <div className="bg-info mx-auto mt-2" style={{ width: '80px', height: '4px' }}></div>
                 </div>
 
-                {/* Botonera de Filtros Limpia */}
-                {/* Botonera de Filtros Mejorada */}
+
+                {/* Botonera para filtrar las coasas*/}
                 <div className="d-flex justify-content-center flex-wrap mb-5 gap-3">
                     {['todo', 'telescopios', 'cursos', 'experiencias'].map((cat) => (
                         <button
@@ -242,7 +238,7 @@ function Inicio({
                 </div>
             </main>
 
-            {/* MÓDULO DE CIERRE: FOTO DEL DIA NASA */}
+            {/*FOTO DEL DIA NASA */}
             {filtroCategoria === 'todo' && (
                 <section className="container pb-5 mb-3 border-top border-secondary border-opacity-25 pt-5">
                     <div className="mb-4 ps-2">
@@ -254,12 +250,11 @@ function Inicio({
                         </h3>
                     </div>
 
-                    {/* CONTENEDOR CON FONDO Y TEXTO BLANCO */}
                     <div className="p-4 rounded-4 border border-info border-opacity-25 shadow-lg"
                         style={{
-                            // Gris piedra claro, elegante y muy legible
+
                             backgroundColor: '#2c3136',
-                            // Borde un poco más brillante
+
                             border: '1px solid rgba(13, 202, 240, 0.4)'
                         }}>
                         {cargandoNasa ? (
@@ -295,10 +290,8 @@ function Inicio({
                                     <span className="badge bg-info text-dark rounded-1 uppercase fw-bold mb-2" style={{ fontSize: '10px', letterSpacing: '1px' }}>
                                         NASA APOD // {fotoNasa.date}
                                     </span>
-                                    {/* H4 en color blanco puro para máximo contraste */}
                                     <h4 className="text-white fw-bold mb-3 fs-4">{fotoNasa.title}</h4>
 
-                                    {/* Texto en blanco con opacidad 90% (legible pero no gris apagado) */}
                                     <p className="text-white m-0 lh-base" style={{ fontSize: '14px', textAlign: 'justify', opacity: '0.9' }}>
                                         {fotoNasa.explanation ? fotoNasa.explanation.slice(0, 240) + '...' : 'Cargando detalles...'}
                                     </p>

@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
-// Importar los componentes
 import Navbar from './Componentes/Navbar';
 import Footer from './Componentes/Footer';
 
-// Importar las páginas
 import Inicio from './Paginas/Inicio';
 import Nosotros from './Paginas/Nosotros';
 import Contacto from './Paginas/Contacto';
 import Terminos from './Paginas/Terminos';
 import Manual from './Paginas/Manual';
 
-// Funciones de ayuda
+// Funciones de ayuda para el rut y todo el otro formulario dsps
 import { encriptarRut, guardarPedidoEnBD } from './funciones';
 
-// Componente para vigilar las rutasa
+
 function MonitorDeRutas({ setAdminActivo }) {
   return null;
 }
@@ -31,11 +29,11 @@ function App() {
   // Controlar si se ve el panel de administración
   const [verPanelAdmin, setVerPanelAdmin] = useState(false);
 
-  // Estados de Monedas
+  // Estados de las monedas
   const [moneda, setmoneda] = useState('CLP');
   const [divisas, setdivisas] = useState({ uf: 1, eur: 1, utm: 1 });
 
-  // Estados de los datos (CRUD)
+  // Estados de los datos 
   const [usuarios, setusuarios] = useState([]);
   const [productos, setproductos] = useState([]);
 
@@ -130,7 +128,7 @@ function App() {
     setVerPanelAdmin(adminActivo);
   }, [adminActivo]);
 
-  // Funciones para actualizar LocalStorage
+  // Funciones LocalStorage
   const guardarUsuarios = (nuevaLista) => {
     setusuarios(nuevaLista);
     localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
@@ -227,7 +225,7 @@ function App() {
     }
   };
 
-  // Enviar el pedido al servidor remoto
+  // Enviar el pedido 
   const finalizarCompra = async (datosCliente) => {
     setMensajeError('');
 
@@ -299,7 +297,7 @@ Gracias por confiar en nosotros.`);
 
     return `$ ${Math.round(precioPesos).toLocaleString('es-CL')}`;
   };
-  // Contar cuántos productos hay en total en el carro
+  // productos del carrooo
   const cantidadCarrito = carrito.reduce((acumulado, item) => acumulado + item.cantidad, 0);
 
   if (cargandoAPI) {
@@ -330,7 +328,8 @@ Gracias por confiar en nosotros.`);
             <div className="modal-content bg-dark text-white border border-info">
 
               <div className="modal-header border-secondary">
-                <h5 className="modal-title text-info">
+                <h5 className="modal-title text-info d-flex align-items-center gap-2">
+                  <i className="bi bi-check-circle-fill"></i>
                   Compra realizada con éxito
                 </h5>
               </div>
@@ -351,6 +350,7 @@ Gracias por confiar en nosotros.`);
                   className="btn btn-info text-dark fw-bold"
                   onClick={() => setMostrarModalExito(false)}
                 >
+                  <i className="bi bi-x-lg me-1"></i>
                   Cerrar
                 </button>
               </div>

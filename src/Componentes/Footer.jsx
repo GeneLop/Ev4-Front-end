@@ -1,11 +1,10 @@
-// src/Componentes/Footer.jsx
 import React from 'react';
 
 function Footer() {
     return (
         <footer className="bg-dark text-white text-center py-4 border-top border-secondary mt-auto">
             <div className="container">
-                {/* Botones de Redes Sociales */}
+                {/* Botones Redes Sociales */}
                 <div className="d-flex justify-content-center gap-3 mb-3">
                     <a
                         href="https://www.instagram.com"
@@ -34,12 +33,11 @@ function Footer() {
                     </a>
                 </div>
 
-                {/* Derechos de autor - Simple y todo blanco excepto el text-info */}
+
                 <p className="mb-1 small text-white">
                     © 2026 <span className="text-info fw-bold">AstroShop Inc.</span> - Todos los derechos reservados.
                 </p>
 
-                {/* Descripción - Blanco puro directo */}
                 <p className="m-0 text-white" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
                     Distribuidor Oficial de Soluciones Ópticas, Material Educativo Certificado y Experiencias Científicas.
                 </p>

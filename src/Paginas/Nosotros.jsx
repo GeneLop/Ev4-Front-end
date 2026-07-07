@@ -1,15 +1,16 @@
-// src/Paginas/Nosotros.jsx
 import React from 'react';
 
 function Nosotros() {
     return (
         <div className="container py-5 text-white animate-fade-in">
 
-            {/* 1. SECCIÓN ENCABEZADO */}
             <div className="row align-items-center mb-5 pb-5 border-bottom border-secondary border-opacity-25">
                 <div className="col-lg-4 mb-4 mb-lg-0">
                     <h2 className="text-info text-uppercase fw-black display-4 mb-0" style={{ letterSpacing: '-1px', lineHeight: '1.1' }}>
-                        Sobre<br />Nosotros
+                        <h2 className="text-info text-uppercase fw-black display-4 mb-0">
+                            <i className="bi bi-stars me-2"></i>
+                            Sobre<br />Nosotros
+                        </h2>
                     </h2>
                     <div className="bg-info mt-3" style={{ height: '4px', width: '50px' }}></div>
                 </div>
@@ -20,11 +21,11 @@ function Nosotros() {
                 </div>
             </div>
 
-            {/* 2. BLOQUE DE ENFOQUE (MISIÓN Y VISIÓN) */}
             <div className="p-4 p-md-5 rounded-4 mb-4 shadow-lg" style={{ backgroundColor: '#2c313a', borderLeft: '6px solid #0dcaf0' }}>
                 <div className="row g-4">
                     <div className="col-md-6 pe-md-4">
                         <h3 className="h4 fw-bold mb-3 text-info d-flex align-items-center gap-2">
+                            <i className="bi bi-bullseye"></i>
                             Nuestra Misión
                         </h3>
                         <p className="text-white small m-0 lh-lg">
@@ -33,6 +34,7 @@ function Nosotros() {
                     </div>
                     <div className="col-md-6 border-start border-secondary ps-md-4">
                         <h3 className="h4 fw-bold mb-3 text-info d-flex align-items-center gap-2">
+                            <i className="bi bi-eye"></i>
                             Nuestra Visión
                         </h3>
                         <p className="text-white small m-0 lh-lg">
@@ -42,7 +44,6 @@ function Nosotros() {
                 </div>
             </div>
 
-            {/* 3. INDICADORES TÉCNICOS */}
             <div className="row g-3 mb-5 text-center">
                 {[
                     { val: "100%", txt: "Calidad Verificada", color: "text-info" },
@@ -59,7 +60,6 @@ function Nosotros() {
                 ))}
             </div>
 
-            {/* 4. PANELES DE TRABAJO */}
             <div className="d-flex flex-column gap-4">
                 {[
                     { id: "01", t: "Control de Calidad", d: "Sometemos cada componente a validaciones técnicas para garantizar desempeño en condiciones extremas.", color: "#0dcaf0" },

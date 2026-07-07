@@ -1,8 +1,6 @@
-// src/Componentes/itemCarrito.jsx
 import React from 'react';
 
 function ItemCarrito({ item, cambiarCantidad, eliminarProducto }) {
-    // Función auxiliar para desplegar los precios en pesos chilenos de forma óptima
     const formatearPrecio = (valor) => {
         return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor);
     };
@@ -10,7 +8,6 @@ function ItemCarrito({ item, cambiarCantidad, eliminarProducto }) {
     return (
         <div className="d-flex align-items-center justify-content-between p-2 mb-2 bg-secondary bg-opacity-10 border border-secondary rounded text-white">
             <div className="flex-grow-1 me-2">
-                {/* Nombre y precio unitario */}
                 <span className="d-block small fw-bold text-info text-truncate" style={{ maxWidth: '180px' }}>
                     {item.nombre}
                 </span>
@@ -19,7 +16,7 @@ function ItemCarrito({ item, cambiarCantidad, eliminarProducto }) {
                 </span>
             </div>
 
-            {/* Controles de volumen de stock (Cantidades) */}
+            {/* Botón para cambiar la cantidad de cosas que pide el cliente*/}
             <div className="d-flex align-items-center gap-1 me-2">
                 <button
                     className="btn btn-xs btn-outline-light px-2 py-0"
@@ -39,13 +36,13 @@ function ItemCarrito({ item, cambiarCantidad, eliminarProducto }) {
                 </button>
             </div>
 
-            {/* Botón de remoción inmediata */}
+            {/* Botón para eliminar*/}
             <button
                 className="btn btn-sm btn-outline-danger border-0 py-1 px-2"
                 onClick={() => eliminarProducto(item.id)}
                 title="Eliminar del carrito"
             >
-                🗑️
+
             </button>
         </div>
     );

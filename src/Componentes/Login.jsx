@@ -1,4 +1,3 @@
-// src/Componentes/Login.jsx
 import { validarRutChileno } from "../funciones";
 import CryptoJS from 'crypto-js';
 import React, { useState, useEffect } from 'react';
@@ -15,8 +14,8 @@ function Login({ setAdminActivo }) {
             setUsuarioLogueado(usuarioGuardado);
         }
     }, []);
-    // Estados estándar para controlar el formulario
-    const [modo, setModo] = useState('login'); // 'login' o 'registro'
+    // Estadosformulario
+    const [modo, setModo] = useState('login');
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
     const [confirmarPassword, setConfirmarPassword] = useState('');
@@ -37,7 +36,7 @@ function Login({ setAdminActivo }) {
         return cuerpo + "-" + dv;
     };
 
-    // Funciones simples para cambiar de pestaña en el formulario
+
     const irARegistro = () => {
         setModo('registro');
         setMensaje('');
@@ -48,23 +47,23 @@ function Login({ setAdminActivo }) {
         setMensaje('');
     };
 
-    // Función para procesar el inicio de sesión
+    // procesar inicio de sesión
     const handleFormLogin = (e) => {
         e.preventDefault();
         setMensaje('');
 
-        // CASO 1: Validar si es el Administrador
+        // Aqui validamos si es el admin o no
         if (correo.trim() === 'j.hewstone@admin.cl' && password === 'admin123') {
             setUsuarioLogueado('James Hewstone (Admin)');
             setAdminActivo(true);
             return;
         }
 
-        // CASO 2: Validar cliente normal en el LocalStorage
+
         const datosLocales = localStorage.getItem('astroshop_bd_usuarios');
         const usuariosBD = JSON.parse(datosLocales) || [];
 
-        // Buscar al usuario con un ciclo tradicional (find)
+
         const clienteEncontrado = usuariosBD.find(function (u) {
             if (!u.passwordEncriptada) return false;
 
@@ -82,7 +81,7 @@ function Login({ setAdminActivo }) {
             return u.correo === correo.trim() && passDesencriptada === password;
         });
 
-        // Verificar si se encontró y su estado
+
         if (clienteEncontrado) {
             if (clienteEncontrado.estado === 'inactivo') {
                 setMensaje('Esta cuenta ha sido desactivada por el administrador.');
@@ -97,7 +96,7 @@ function Login({ setAdminActivo }) {
         }
     };
 
-    // Función para procesar el registro de un nuevo cliente
+    // procesar el registro de un nuevo cliente
     const handleRegistroCliente = (e) => {
         e.preventDefault();
         setMensaje('');
@@ -192,7 +191,7 @@ function Login({ setAdminActivo }) {
         window.location.reload();
     };
 
-    // Función básica para cerrar sesión
+    // Función cerrar sesión
     const handleLogout = () => {
         localStorage.removeItem("usuario");
         setUsuarioLogueado(null);
@@ -206,13 +205,12 @@ function Login({ setAdminActivo }) {
     return (
         <div className="p-4 bg-dark text-white rounded border border-secondary" style={{ width: '100%' }}>
 
-            {/* Encabezado del contenedor */}
             <div className="d-flex justify-content-between border-bottom border-secondary pb-2 mb-3">
                 <h5 className="text-warning text-uppercase fw-bold m-0" style={{ fontSize: '0.9rem' }}>
                     {usuarioLogueado ? 'Sesión Activa' : modo === 'login' ? 'Inicia sesión o regístrate.' : 'Crear Cuenta'}
                 </h5>
 
-                {/* Botón para alternar vistas */}
+                {/* esto para cambiar en el login si tiene o no cuenta */}
                 {!usuarioLogueado && (
                     <>
                         {modo === 'login' ? (
@@ -228,7 +226,7 @@ function Login({ setAdminActivo }) {
                 )}
             </div>
 
-            {/* VISTA 1: Sesión ya iniciada */}
+            {/* Si ya inicio sesion */}
             {usuarioLogueado ? (
                 <div className="text-center py-2">
                     <p className="text-white small mb-3">
@@ -239,7 +237,7 @@ function Login({ setAdminActivo }) {
                     </button>
                 </div>
             ) : (
-                /* VISTA 2: Formularios de Login o Registro */
+                /*Formulario*/
                 <>
                     {modo === 'login' ? (
                         <form onSubmit={handleFormLogin} style={{ fontSize: '0.8rem' }}>

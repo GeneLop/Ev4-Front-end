@@ -27,7 +27,6 @@ function Navbar({
     setAdminActivo,
     moneda,
     setmoneda,
-    // 🌟 RECIBIMOS LAS PROPS DE CONTROL DE VISTAS DEL ADMIN
     verPanelAdmin,
     setVerPanelAdmin
 }) {
@@ -37,7 +36,6 @@ function Navbar({
             ? "nav-link text-info fw-bold border-bottom border-info"
             : "nav-link text-white fw-medium";
 
-    // 🌟 FUNCIÓN ALUMNO: Si el Admin pincha en un link normal de navegación, ocultamos el panel
     const irAPaginaNormal = () => {
         if (adminActivo) {
             setVerPanelAdmin(false);
@@ -47,10 +45,7 @@ function Navbar({
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top">
             <div className="container">
-                {/* Logo Principal */}
-                {/* Logo Principal con Icono */}
                 <Link className="navbar-brand fw-bold text-uppercase d-flex align-items-center" to="/" onClick={irAPaginaNormal}>
-                    {/* SVG Minimalista */}
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="me-2 text-info">
                         <circle cx="12" cy="12" r="7"></circle>
                         <ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(45 12 12)"></ellipse>
@@ -64,7 +59,6 @@ function Navbar({
 
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto align-items-center">
-                        {/* Enlaces de navegación con el evento de clic incorporado */}
                         <li className="nav-item">
                             <NavLink className={estiloEnlace} to="/" onClick={irAPaginaNormal}>Inicio</NavLink>
                         </li>
@@ -81,7 +75,7 @@ function Navbar({
                             <NavLink className={estiloEnlace} to="/manual" onClick={irAPaginaNormal}>Manual</NavLink>
                         </li>
 
-                        {/* SELECTOR DE DIVISAS */}
+                        {/*DIVISAS */}
                         <li className="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
                             <button className="btn btn-outline-info btn-sm dropdown-toggle fw-bold text-uppercase px-3" type="button" id="dropdownDivisas" data-bs-toggle="dropdown" aria-expanded="false">
                                 Moneda: {moneda}
@@ -94,7 +88,7 @@ function Navbar({
                             </ul>
                         </li>
 
-                        {/* DROPDOWN DEL PANEL DE USUARIO */}
+                        {/*PANEL DE USUARIO */}
                         <li className="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
                             <button className="btn btn-outline-info btn-sm dropdown-toggle fw-bold text-uppercase px-3" type="button" id="dropdownLogin" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                 Mi Cuenta
@@ -104,7 +98,7 @@ function Navbar({
                             </div>
                         </li>
 
-                        {/* BOTÓN DEL PANEL ADMIN CONDICIONADO - 🌟 CAMBIO ALUMNO: Cambia la vista al panel usando setVerPanelAdmin */}
+                        {/* BOTÓN DEL PANEL ADMIN */}
                         {adminActivo && (
                             <li className="nav-item ms-lg-2 mt-2 mt-lg-0">
                                 <button
@@ -117,7 +111,7 @@ function Navbar({
                             </li>
                         )}
 
-                        {/* DROPDOWN DEL CARRITO DE COMPRAS - SE OCULTA SI ADMINACTIVO ES TRUE */}
+                        {/* Cuando el admin esta activo se oculta el carro*/}
                         {!adminActivo && (
                             <li className="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
                                 <button className="btn btn-warning text-dark btn-sm position-relative d-flex align-items-center dropdown-toggle fw-bold" type="button" id="dropdownCarrito" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">

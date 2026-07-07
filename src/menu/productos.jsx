@@ -1,8 +1,4 @@
-// src/menu/productos.js
-
-// ==========================================
-// 1. CATEGORÍA: Telescopios e Instrumentación
-// ==========================================
+//borrar esta pagina
 export const productosTelescopios = [
     {
         id: 1,

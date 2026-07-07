@@ -1,4 +1,3 @@
-// src/Paginas/Manual.jsx
 import React from 'react';
 
 function Manual() {
@@ -9,37 +8,37 @@ function Manual() {
         {
             id: "01",
             t: "Navegación General",
-            d: "Utiliza el menú superior para desplazarte entre las páginas principales: Inicio, Nosotros, Contacto, Términos y este Manual. El sistema permite cambiar la moneda de visualización (CLP, UF, EUR, UTM) en cualquier momento desde el selector de divisas.",
+            d: "Utiliza el menú superior para desplazarte entre las páginas principales: Inicio, Nosotros, Contacto, Términos y este Manual. El sistema permite cambiar de forma interactiva la moneda de visualización (CLP, UF, EUR, UTM) en cualquier momento desde el selector de divisas, recalculando los valores en pantalla.",
             color: colorCeleste
         },
         {
             id: "02",
             t: "Módulo de Inicio",
-            d: "Aquí encuentras nuestro catálogo organizado por categorías (Telescopios, Cursos y Kits). Puedes agregar productos al carrito con un solo clic. El resumen de tu compra, incluyendo el total y opciones de despacho, se gestiona desde el botón 'Carrito' en la barra de navegación.",
+            d: "Aquí encuentras nuestro catálogo interactivo organizado por categorías (Telescopios, Cursos y Kits). Cuenta con un carrusel funcional para destacar novedades y elementos colapsables para mostrar información. Puedes agregar productos al carrito con un solo clic.",
             color: colorAmarillo
         },
         {
             id: "03",
             t: "Autenticación y Cuentas",
-            d: "Accede a 'Mi Cuenta' para iniciar sesión o registrarte. Si eres Administrador, esta sección permite activar el 'Panel de Administración' para acceder a las herramientas de gestión interna.",
+            d: "Accede a 'Mi Cuenta' para iniciar sesión o registrarte mediante el formulario. Si eres Administrador, esta sección permite activar el 'Panel de Administración' para acceder a las herramientas de gestión interna.",
             color: colorCeleste
         },
         {
             id: "04",
             t: "Panel de Administrador",
-            d: "Sección donde puedes gestionar cuentas de usuario (habilitar/deshabilitar), controlar el inventario (CRUD de productos) y revisar el historial de pedidos realizados por los clientes.",
+            d: "Sección donde puedes gestionar cuentas de usuario (habilitar/deshabilitar) y controlar el inventario a través de un CRUD funcional. Este módulo permite registrar nuevos elementos, listar el stock, actualizar y eliminar productos.",
             color: colorAmarillo
         },
         {
             id: "05",
-            t: "Carrito y Checkout",
-            d: "Desde esta vista, gestionas las cantidades de tus productos, calculas costos de envío según tu región y finalizas tu compra de forma segura ingresando tus datos personales y validando tu RUT.",
+            t: "Carrito",
+            d: "Desde esta vista, gestionas las cantidades de tus productos, calculas costos de envío según tu región y finalizas tu compra ingresando tus datos personales. El formulario exige validar tu rut antes de procesar el pago.",
             color: colorCeleste
         },
         {
             id: "06",
-            t: "Seguridad y Datos",
-            d: "Toda la información sensible está protegida. Las contraseñas se almacenan mediante encriptación y el sistema garantiza la integridad de los datos de los pedidos realizados, manteniendo un registro transparente de cada transacción.",
+            t: "Visualización de Estilos UI",
+            d: "En la sección de Términos y Condiciones, el sistema tiene una botonera que permite filtrar por estilos. Al hacer clic en los distintos botones, puedes alternar entre las interfaces diseñadas en Bootstrap, Materialize CSS y Bulma.",
             color: colorAmarillo
         }
     ];
@@ -53,7 +52,7 @@ function Manual() {
                     </h2>
                     <div className="bg-info mt-3" style={{ height: '4px', width: '50px' }}></div>
                 </div>
-                {/* ESTA ES LA PARTE QUE CORREGIMOS PARA QUE SEA BLANCO Y FINO */}
+
                 <div className="col-lg-8">
                     <p className="fs-5 text-white m-0 lh-base" style={{ fontWeight: '400' }}>
                         Bienvenido a nuestra plataforma. Esta guía describe las funcionalidades principales para que aproveches al máximo tu experiencia en nuestra tienda.
