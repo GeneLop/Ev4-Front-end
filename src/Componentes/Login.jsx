@@ -19,6 +19,7 @@ function Login({ setAdminActivo }) {
     const [modo, setModo] = useState('login'); // 'login' o 'registro'
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmarPassword, setConfirmarPassword] = useState('');
     const [nombre, setNombre] = useState('');
     const [rut, setRut] = useState('');
     const [mensaje, setMensaje] = useState('');
@@ -53,7 +54,7 @@ function Login({ setAdminActivo }) {
         setMensaje('');
 
         // CASO 1: Validar si es el Administrador
-        if (correo.trim() === 'j.hewstone@profesor.cl' && password === 'admin123') {
+        if (correo.trim() === 'j.hewstone@admin.cl' && password === 'admin123') {
             setUsuarioLogueado('James Hewstone (Admin)');
             setAdminActivo(true);
             return;
@@ -157,6 +158,10 @@ function Login({ setAdminActivo }) {
             setMensaje("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
+        if (password !== confirmarPassword) {
+            setMensaje("Las contraseñas no coinciden.");
+            return;
+        }
 
         const nuevoCliente = {
             id: Date.now().toString(),
@@ -181,6 +186,7 @@ function Login({ setAdminActivo }) {
         setRut('');
         setCorreo('');
         setPassword('');
+        setConfirmarPassword('');
         setMensaje('');
 
         window.location.reload();
@@ -193,6 +199,7 @@ function Login({ setAdminActivo }) {
         setAdminActivo(false);
         setCorreo('');
         setPassword('');
+        setConfirmarPassword('');
         setMensaje('');
     };
 
@@ -316,6 +323,20 @@ function Login({ setAdminActivo }) {
                             <div className="mb-3">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Crea tu Contraseña:</label>
                                 <input type="password" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Contraseña segura" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            </div>
+                            <div className="mb-3">
+                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>
+                                    Confirmar Contraseña:
+                                </label>
+
+                                <input
+                                    type="password"
+                                    className="form-control form-control-sm bg-dark text-white border-secondary"
+                                    placeholder="Repite tu contraseña"
+                                    value={confirmarPassword}
+                                    onChange={(e) => setConfirmarPassword(e.target.value)}
+                                    required
+                                />
                             </div>
                             {mensaje && (
                                 <div className="alert alert-info bg-info bg-opacity-10 border-info text-info small py-1 mb-2" style={{ fontSize: '11px' }}>

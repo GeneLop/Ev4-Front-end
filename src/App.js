@@ -85,7 +85,7 @@ function App() {
       setusuarios(JSON.parse(bdLocal));
     } else {
       const usuariosIniciales = [
-        { id: "1", nombre: "James Hewstone", rut: "12.345.678-9", correo: "j.hewstone@profesor.cl", estado: "activo", passwordEncriptada: "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK" },
+        { id: "1", nombre: "James Hewstone", rut: "12.345.678-9", correo: "j.hewstone@admin.cl", estado: "activo", passwordEncriptada: "$2a$12$K7Y8mN92PzQ1wXvR3bT5eO2gH4jK" },
         { id: "2", nombre: "Antonia Astrea", rut: "20.441.302-K", correo: "antonia@explorador.cl", estado: "activo", passwordEncriptada: "$2a$12$X9vW2zQ1mN82P7bT5eO4jK3bH2gM" }
       ];
       setusuarios(usuariosIniciales);
@@ -184,7 +184,7 @@ function App() {
         imagen: imagen
       };
       guardarProductos([...productos, nuevoProd]);
-      alert("Nuevo producto añadido con éxito.");
+      alert("producto añadido con éxito.");
     }
 
     setnombreProd(''); setprecioProd(''); setdescripcionProd(''); setimagenProd(''); setcategoriaProd('');
