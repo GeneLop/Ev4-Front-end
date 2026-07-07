@@ -614,7 +614,7 @@ Gracias por confiar en nosotros.`);
                                   </span>
                                   <div className="text-white text-wrap">{pedido.domicilio_entrega}</div>
                                 </td>
-                                <td className="text-success fw-bold text-end fs-6">
+                                <td className="text-white fw-bold text-end fs-6">
                                   ${Number(pedido.monto_total_pagado || 0).toLocaleString('es-CL')}
                                 </td>
                               </tr>
