@@ -242,11 +242,11 @@ function Login({ setAdminActivo }) {
                     {modo === 'login' ? (
                         <form onSubmit={iniciarsesion} style={{ fontSize: '0.8rem' }}>
                             <div className="mb-2">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
                                 <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="ejemplo@correo.com" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
                             </div>
                             <div className="mb-3">
-                                <label className="form-label text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Contraseña:</label>
+                                <label className="form-label text-white d-block mb-1" style={{ fontSize: '11px' }}>Contraseña:</label>
                                 <input type="password" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             </div>
                             {mensaje && (
@@ -261,7 +261,7 @@ function Login({ setAdminActivo }) {
                     ) : (
                         <form onSubmit={crearCuenta} style={{ fontSize: '0.8rem' }}>
                             <div className="mb-2">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Nombre Completo:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Nombre Completo:</label>
                                 <input
                                     type="text"
                                     className="form-control form-control-sm bg-dark text-white border-secondary"
@@ -281,7 +281,7 @@ function Login({ setAdminActivo }) {
                                 />
                             </div>
                             <div className="mb-2">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>RUT:</label>
                                 <input
                                     type="text"
                                     className="form-control form-control-sm bg-dark text-white border-secondary"
@@ -299,7 +299,7 @@ function Login({ setAdminActivo }) {
                                 />
                             </div>
                             <div className="mb-2">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
                                 <input
                                     type="email"
                                     className="form-control form-control-sm bg-dark text-white border-secondary"
@@ -319,11 +319,11 @@ function Login({ setAdminActivo }) {
                                 />
                             </div>
                             <div className="mb-3">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Crea tu Contraseña:</label>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Crea tu Contraseña:</label>
                                 <input type="password" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Contraseña segura" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             </div>
                             <div className="mb-3">
-                                <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>
+                                <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>
                                     Confirmar Contraseña:
                                 </label>
 
