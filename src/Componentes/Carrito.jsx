@@ -342,7 +342,7 @@ function Carrito({
                                             <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Región de Destino:</label>
                                             <select className="form-select form-select-sm bg-dark text-white border-secondary" value={regionSeleccionada} onChange={Region}>
                                                 {Object.keys(regionesChile).map(reg => (
-                                                    <option key={reg} value={reg}>{reg === 'Magallanes' ? 'Magallanes (Envío Local)' : `${reg} (Otras Regiones)`}</option>
+                                                    <option key={reg} value={reg}>{reg === 'Magallanes' ? 'Magallanes (Envío Local)' : `${reg} `}</option>
                                                 ))}
                                             </select>
                                         </div>

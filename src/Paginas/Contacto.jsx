@@ -7,7 +7,7 @@ function Contacto() {
     const [errorCorreo, setErrorCorreo] = useState('');
     const [formularioValido, setFormularioValido] = useState(false);
 
-    const handleNombreChange = (e) => {
+    const limpiarNombre = (e) => {
         const input = e.target.value;
         const textoLimpio = input.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
         setNombre(textoLimpio);
@@ -31,7 +31,7 @@ function Contacto() {
         }
     }, [nombre, correo, mensaje]);
 
-    const handleEnviar = (e) => {
+    const enviarConsulta = (e) => {
         e.preventDefault();
         if (formularioValido) {
             alert(`Consulta Recibida\n\nMuchas gracias ${nombre}. Nos pondremos en contacto al correo: ${correo} a la brevedad.`);
@@ -66,10 +66,10 @@ function Contacto() {
                     <div className="p-4 rounded-4 h-100 shadow-lg" style={{ backgroundColor: '#2c313a', borderLeft: '6px solid #0dcaf0' }}>
                         <h3 className="h5 text-white text-uppercase fw-bold mb-4" style={{ letterSpacing: '0.5px' }}>Contacto</h3>
 
-                        <form onSubmit={handleEnviar}>
+                        <form onSubmit={enviarConsulta}>
                             <div className="mb-3">
                                 <label className="form-label text-white small text-uppercase fw-bold" style={{ fontSize: '11px' }}>Nombre Completo</label>
-                                <input type="text" className="form-control bg-dark text-white border-secondary p-2 small" placeholder="Ej: Carlos Astroza" value={nombre} onChange={handleNombreChange} required style={{ fontSize: '14px' }} />
+                                <input type="text" className="form-control bg-dark text-white border-secondary p-2 small" placeholder="Ej: Carlos Astroza" value={nombre} onChange={limpiarNombre} required style={{ fontSize: '14px' }} />
                             </div>
 
                             <div className="mb-3">

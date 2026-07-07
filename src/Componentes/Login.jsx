@@ -48,7 +48,7 @@ function Login({ setAdminActivo }) {
     };
 
     // procesar inicio de sesión
-    const handleFormLogin = (e) => {
+    const iniciarsesion = (e) => {
         e.preventDefault();
         setMensaje('');
 
@@ -97,7 +97,7 @@ function Login({ setAdminActivo }) {
     };
 
     // procesar el registro de un nuevo cliente
-    const handleRegistroCliente = (e) => {
+    const crearCuenta = (e) => {
         e.preventDefault();
         setMensaje('');
 
@@ -192,7 +192,7 @@ function Login({ setAdminActivo }) {
     };
 
     // Función cerrar sesión
-    const handleLogout = () => {
+    const cerrarSesion = () => {
         localStorage.removeItem("usuario");
         setUsuarioLogueado(null);
         setAdminActivo(false);
@@ -232,7 +232,7 @@ function Login({ setAdminActivo }) {
                     <p className="text-white small mb-3">
                         Bienvenid@ <span className="text-info fw-bold">{usuarioLogueado}</span>
                     </p>
-                    <button type="button" className="btn btn-sm btn-outline-danger w-100 fw-bold text-uppercase" onClick={handleLogout} style={{ fontSize: '11px' }}>
+                    <button type="button" className="btn btn-sm btn-outline-danger w-100 fw-bold text-uppercase" onClick={cerrarSesion} style={{ fontSize: '11px' }}>
                         Cerrar Sesión
                     </button>
                 </div>
@@ -240,7 +240,7 @@ function Login({ setAdminActivo }) {
                 /*Formulario*/
                 <>
                     {modo === 'login' ? (
-                        <form onSubmit={handleFormLogin} style={{ fontSize: '0.8rem' }}>
+                        <form onSubmit={iniciarsesion} style={{ fontSize: '0.8rem' }}>
                             <div className="mb-2">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Correo Electrónico:</label>
                                 <input type="email" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="ejemplo@correo.com" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
@@ -259,7 +259,7 @@ function Login({ setAdminActivo }) {
                             </button>
                         </form>
                     ) : (
-                        <form onSubmit={handleRegistroCliente} style={{ fontSize: '0.8rem' }}>
+                        <form onSubmit={crearCuenta} style={{ fontSize: '0.8rem' }}>
                             <div className="mb-2">
                                 <label className="text-white-50 d-block mb-1" style={{ fontSize: '11px' }}>Nombre Completo:</label>
                                 <input
