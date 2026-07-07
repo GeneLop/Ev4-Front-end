@@ -82,7 +82,6 @@ export const guardarPedidoEnBD = async (nuevoPedido) => {
 
     if (!respuesta.ok) {
         const error = await respuesta.text();
-        console.log(error);
         throw new Error(`Error ${respuesta.status}: ${error}`);
     }
 

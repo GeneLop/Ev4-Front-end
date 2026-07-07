@@ -21,7 +21,7 @@ function Manual() {
         {
             id: "03",
             t: "Autenticación y Cuentas",
-            d: "Accede a 'Mi Cuenta' para iniciar sesión o registrarte. Como cliente, puedes ver tu historial; si eres Administrador, esta sección permite activar el 'Panel de Administración' para acceder a las herramientas de gestión interna.",
+            d: "Accede a 'Mi Cuenta' para iniciar sesión o registrarte. Si eres Administrador, esta sección permite activar el 'Panel de Administración' para acceder a las herramientas de gestión interna.",
             color: colorCeleste
         },
         {

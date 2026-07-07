@@ -32,23 +32,23 @@ function App() {
   const [verPanelAdmin, setVerPanelAdmin] = useState(false);
 
   // Estados de Monedas
-  const [monedaActiva, setMonedaActiva] = useState('CLP');
-  const [valoresDivisas, setValoresDivisas] = useState({ uf: 1, eur: 1, utm: 1 });
+  const [moneda, setmoneda] = useState('CLP');
+  const [divisas, setdivisas] = useState({ uf: 1, eur: 1, utm: 1 });
 
   // Estados de los datos (CRUD)
   const [usuarios, setusuarios] = useState([]);
-  const [listaProductos, setlistaProductos] = useState([]);
+  const [productos, setproductos] = useState([]);
 
   // Estados para el formulario de editar/añadir productos
   const [idProdEditando, setIdProdEditando] = useState(null);
-  const [prodNombre, setProdNombre] = useState('');
-  const [prodPrecio, setProdPrecio] = useState('');
-  const [prodCategoria, setProdCategoria] = useState('');
-  const [prodDescripcion, setProdDescripcion] = useState('');
-  const [prodImagen, setProdImagen] = useState('');
+  const [nombreProd, setnombreProd] = useState('');
+  const [precioProd, setprecioProd] = useState('');
+  const [categoriaProd, setcategoriaProd] = useState('');
+  const [descripcionProd, setdescripcionProd] = useState('');
+  const [imagenProd, setimagenProd] = useState('');
 
   // Lista de pedidos guardados
-  const [historialPedidos, setHistorialPedidos] = useState([]);
+  const [pedidos, setpedidos] = useState([]);
 
   // Estados del carrito de compras
   const [carrito, setCarrito] = useState([]);
@@ -66,8 +66,7 @@ function App() {
       try {
         const res = await fetch('https://mindicador.cl/api');
         const datos = await res.json();
-        console.log("anda api", datos);
-        setValoresDivisas({
+        setdivisas({
           uf: datos.uf.valor,
           eur: datos.euro.valor,
           utm: datos.utm.valor
@@ -96,14 +95,13 @@ function App() {
     // Carga de productos
     const prodLocal = localStorage.getItem('astroshop_bd_productos_v4');
     if (prodLocal) {
-      setlistaProductos(JSON.parse(prodLocal));
+      setproductos(JSON.parse(prodLocal));
       setCargandoAPI(false);
     } else {
       fetch("https://6a455557aab3faec3f69d15d.mockapi.io/Productos")
         .then(res => res.json())
         .then(datos => {
-          console.log("productos mockapi", datos);
-          setlistaProductos(datos);
+          setproductos(datos);
           localStorage.setItem("astroshop_bd_productos_v4", JSON.stringify(datos));
           setCargandoAPI(false);
         })
@@ -120,8 +118,7 @@ function App() {
       fetch("https://6a455557aab3faec3f69d15d.mockapi.io/pedidos")
         .then(res => res.json())
         .then(datos => {
-          console.log("Historial de pedidos MockAPI recuperado de la base de datos:", datos);
-          setHistorialPedidos(datos.reverse());
+          setpedidos(datos.reverse());
         })
         .catch(err => console.error("Error al recuperar pedidos:", err));
     }
@@ -133,13 +130,13 @@ function App() {
   }, [adminActivo]);
 
   // Funciones para actualizar LocalStorage
-  const guardarUsuariosLocal = (nuevaLista) => {
+  const guardarUsuarios = (nuevaLista) => {
     setusuarios(nuevaLista);
     localStorage.setItem('astroshop_bd_usuarios', JSON.stringify(nuevaLista));
   };
 
   const guardarProductos = (nuevaLista) => {
-    setlistaProductos(nuevaLista);
+    setproductos(nuevaLista);
     localStorage.setItem('astroshop_bd_productos_v4', JSON.stringify(nuevaLista));
   };
 
@@ -147,50 +144,50 @@ function App() {
     const actualizados = usuarios.map(u =>
       u.id === id ? { ...u, estado: u.estado === 'activo' ? 'inactivo' : 'activo' } : u
     );
-    guardarUsuariosLocal(actualizados);
+    guardarUsuarios(actualizados);
   };
 
   const cancelarEdit = () => {
     setIdProdEditando(null);
-    setProdNombre(''); setProdPrecio(''); setProdCategoria(''); setProdDescripcion(''); setProdImagen('');
+    setnombreProd(''); setprecioProd(''); setcategoriaProd(''); setdescripcionProd(''); setimagenProd('');
   };
 
   const guardarProducto = (e) => {
     e.preventDefault();
 
-    if (!prodCategoria) {
+    if (!categoriaProd) {
       alert("Por favor, seleccione una categoría válida.");
       return;
     }
 
-    const precioNum = parseInt(prodPrecio) || 0;
-    const imagenUrl = prodImagen.trim() !== ''
-      ? prodImagen.trim()
+    const precio = parseInt(precioProd) || 0;
+    const imagen = imagenProd.trim() !== ''
+      ? imagenProd.trim()
       : "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400&auto=format&fit=crop";
 
     if (idProdEditando) {
-      const editados = listaProductos.map(p =>
+      const nuevosProductos = productos.map(p =>
         p.id === idProdEditando
-          ? { ...p, nombre: prodNombre, precio: precioNum, categoria: prodCategoria, descripcion: prodDescripcion || p.descripcion, imagen: imagenUrl }
+          ? { ...p, nombre: nombreProd, precio: precio, categoria: categoriaProd, descripcion: descripcionProd || p.descripcion, imagen: imagen }
           : p
       );
-      guardarProductos(editados);
+      guardarProductos(nuevosProductos);
       setIdProdEditando(null);
       alert("Catálogo actualizado con éxito.");
     } else {
       const nuevoProd = {
         id: Date.now(),
-        nombre: prodNombre,
-        precio: precioNum,
-        categoria: prodCategoria,
-        descripcion: prodDescripcion || "Por favor, seleccione una categoría válida.",
-        imagen: imagenUrl
+        nombre: nombreProd,
+        precio: precio,
+        categoria: categoriaProd,
+        descripcion: descripcionProd || "Por favor, seleccione una categoría válida.",
+        imagen: imagen
       };
-      guardarProductos([...listaProductos, nuevoProd]);
+      guardarProductos([...productos, nuevoProd]);
       alert("Nuevo producto añadido con éxito.");
     }
 
-    setProdNombre(''); setProdPrecio(''); setProdDescripcion(''); setProdImagen(''); setProdCategoria('');
+    setnombreProd(''); setprecioProd(''); setdescripcionProd(''); setimagenProd(''); setcategoriaProd('');
   };
 
   // Funciones del carrito de compras
@@ -287,25 +284,22 @@ Gracias por confiar en nosotros.`);
   };
 
   const formatearPrecio = (precioPesos) => {
-    console.log("Moneda:", monedaActiva);
-    console.log("Valores:", valoresDivisas);
-
-    if (monedaActiva === 'UF') {
-      return `${(precioPesos / valoresDivisas.uf).toFixed(2)} UF`;
+    if (moneda === 'UF') {
+      return `${(precioPesos / divisas.uf).toFixed(2)} UF`;
     }
 
-    if (monedaActiva === 'EUR') {
-      return `€ ${(precioPesos / valoresDivisas.eur).toFixed(2)}`;
+    if (moneda === 'EUR') {
+      return `€ ${(precioPesos / divisas.eur).toFixed(2)}`;
     }
 
-    if (monedaActiva === 'UTM') {
-      return `${(precioPesos / valoresDivisas.utm).toFixed(2)} UTM`;
+    if (moneda === 'UTM') {
+      return `${(precioPesos / divisas.utm).toFixed(2)} UTM`;
     }
 
     return `$ ${Math.round(precioPesos).toLocaleString('es-CL')}`;
   };
   // Contar cuántos productos hay en total en el carro
-  const cantidadTotalItems = carrito.reduce((acumulado, item) => acumulado + item.cantidad, 0);
+  const cantidadCarrito = carrito.reduce((acumulado, item) => acumulado + item.cantidad, 0);
 
   if (cargandoAPI) {
     return (
@@ -368,7 +362,7 @@ Gracias por confiar en nosotros.`);
 
       <div className="d-flex flex-column min-vh-screen bg-dark">
         <Navbar
-          cantidadCarrito={cantidadTotalItems}
+          cantidadCarrito={cantidadCarrito}
           carrito={carrito}
           total={total}
           formatearPrecio={formatearPrecio}
@@ -388,8 +382,8 @@ Gracias por confiar en nosotros.`);
           onFinalizar={finalizarCompra}
           adminActivo={adminActivo}
           setAdminActivo={setAdminActivo}
-          monedaActiva={monedaActiva}
-          setMonedaActiva={setMonedaActiva}
+          moneda={moneda}
+          setmoneda={setmoneda}
 
           verPanelAdmin={verPanelAdmin}
           setVerPanelAdmin={setVerPanelAdmin}
@@ -480,15 +474,15 @@ Gracias por confiar en nosotros.`);
                     <form onSubmit={guardarProducto}>
                       <div className="mb-3">
                         <label className="form-label text-white small">Nombre del Artículo:</label>
-                        <input type="text" className="form-control bg-dark text-white border-secondary" value={prodNombre} onChange={e => setProdNombre(e.target.value)} required />
+                        <input type="text" className="form-control bg-dark text-white border-secondary" value={nombreProd} onChange={e => setnombreProd(e.target.value)} required />
                       </div>
                       <div className="mb-3">
                         <label className="form-label text-white small">Precio Unitario ($):</label>
-                        <input type="number" className="form-control bg-dark text-white border-secondary" value={prodPrecio} onChange={e => setProdPrecio(e.target.value)} required />
+                        <input type="number" className="form-control bg-dark text-white border-secondary" value={precioProd} onChange={e => setprecioProd(e.target.value)} required />
                       </div>
                       <div className="mb-3">
                         <label className="form-label text-white small">Categoría:</label>
-                        <select className="form-select bg-dark text-white border-secondary" value={prodCategoria} onChange={e => setProdCategoria(e.target.value)} required>
+                        <select className="form-select bg-dark text-white border-secondary" value={categoriaProd} onChange={e => setcategoriaProd(e.target.value)} required>
                           <option value="" disabled>-- Seleccione una categoría --</option>
                           <option value="telescopios">Telescopios</option>
                           <option value="cursos">Cursos Virtuales</option>
@@ -497,11 +491,11 @@ Gracias por confiar en nosotros.`);
                       </div>
                       <div className="mb-3">
                         <label className="form-label text-white small">URL de la Imagen (Opcional):</label>
-                        <input type="text" className="form-control bg-dark text-white border-secondary" placeholder="https://..." value={prodImagen} onChange={e => setProdImagen(e.target.value)} />
+                        <input type="text" className="form-control bg-dark text-white border-secondary" placeholder="https://..." value={imagenProd} onChange={e => setimagenProd(e.target.value)} />
                       </div>
                       <div className="mb-4">
                         <label className="form-label text-white small">Descripción del Producto:</label>
-                        <textarea className="form-control bg-dark text-white border-secondary" rows="2" placeholder="Detalles..." value={prodDescripcion} onChange={e => setProdDescripcion(e.target.value)}></textarea>
+                        <textarea className="form-control bg-dark text-white border-secondary" rows="2" placeholder="Detalles..." value={descripcionProd} onChange={e => setdescripcionProd(e.target.value)}></textarea>
                       </div>
 
                       <div className="d-flex gap-2">
@@ -530,20 +524,20 @@ Gracias por confiar en nosotros.`);
                           </tr>
                         </thead>
                         <tbody>
-                          {listaProductos.map(prod => (
+                          {productos.map(prod => (
                             <tr key={prod.id}>
                               <td className="text-white font-monospace small">{prod.id}</td>
                               <td className="fw-semibold text-white">{prod.nombre}</td>
                               <td><span className="badge bg-secondary text-white text-uppercase" style={{ fontSize: '10px' }}>{prod.categoria}</span></td>
                               <td className="text-info fw-bold">${prod.precio.toLocaleString('es-CL')}</td>
                               <td className="text-center">
-                                <button className="btn btn-sm btn-warning py-1 px-2 me-2" style={{ fontSize: '11px' }} onClick={() => { setIdProdEditando(prod.id); setProdNombre(prod.nombre); setProdPrecio(prod.precio); setProdCategoria(prod.categoria); setProdDescripcion(prod.descripcion || ''); setProdImagen(prod.imagen || ''); }}>Editar</button>
+                                <button className="btn btn-sm btn-warning py-1 px-2 me-2" style={{ fontSize: '11px' }} onClick={() => { setIdProdEditando(prod.id); setnombreProd(prod.nombre); setprecioProd(prod.precio); setcategoriaProd(prod.categoria); setdescripcionProd(prod.descripcion || ''); setimagenProd(prod.imagen || ''); }}>Editar</button>
                                 <button
                                   className="btn btn-sm btn-danger py-1 px-2"
                                   style={{ fontSize: '11px' }}
                                   onClick={() => {
                                     if (window.confirm(`¿Estás seguro de que deseas eliminar el producto: "${prod.nombre}"?`)) {
-                                      guardarProductos(listaProductos.filter(p => p.id !== prod.id));
+                                      guardarProductos(productos.filter(p => p.id !== prod.id));
                                     }
                                   }}
                                 >
@@ -563,7 +557,7 @@ Gracias por confiar en nosotros.`);
                 <div className="row">
                   <div className="col-12">
                     <h4 className="h5 text-warning text-uppercase fw-bold mb-4">Registro de Ventas</h4>
-                    {historialPedidos.length === 0 ? (
+                    {pedidos.length === 0 ? (
                       <p className="text-white bg-dark p-4 rounded text-center small border border-secondary border-opacity-25">
                         No se registran transacciones almacenadas en el servidor.
                       </p>
@@ -583,7 +577,7 @@ Gracias por confiar en nosotros.`);
                             </tr>
                           </thead>
                           <tbody>
-                            {historialPedidos.map((pedido) => (
+                            {pedidos.map((pedido) => (
                               <tr key={pedido.id}>
                                 <td className="text-info font-monospace fw-bold">#{pedido.id}</td>
                                 <td className="text-white">{pedido.fecha_registro ? pedido.fecha_registro.split('T')[0] : 'S/F'}</td>
@@ -639,9 +633,9 @@ Gracias por confiar en nosotros.`);
             <Routes>
               <Route path="/" element={
                 <Inicio
-                  productosTelescopios={listaProductos.filter((p) => { return p.categoria === 'telescopios'; })}
-                  productosCursos={listaProductos.filter((p) => { return p.categoria === 'cursos'; })}
-                  productosExperiencias={listaProductos.filter((p) => { return p.categoria === 'experiencias'; })}
+                  productosTelescopios={productos.filter((p) => { return p.categoria === 'telescopios'; })}
+                  productosCursos={productos.filter((p) => { return p.categoria === 'cursos'; })}
+                  productosExperiencias={productos.filter((p) => { return p.categoria === 'experiencias'; })}
                   agregarProducto={agregarProducto}
                   formatearPrecio={formatearPrecio}
                 />

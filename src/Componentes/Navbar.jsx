@@ -25,8 +25,8 @@ function Navbar({
     onFinalizar,
     adminActivo,
     setAdminActivo,
-    monedaActiva,
-    setMonedaActiva,
+    moneda,
+    setmoneda,
     // 🌟 RECIBIMOS LAS PROPS DE CONTROL DE VISTAS DEL ADMIN
     verPanelAdmin,
     setVerPanelAdmin
@@ -84,13 +84,13 @@ function Navbar({
                         {/* SELECTOR DE DIVISAS */}
                         <li className="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
                             <button className="btn btn-outline-info btn-sm dropdown-toggle fw-bold text-uppercase px-3" type="button" id="dropdownDivisas" data-bs-toggle="dropdown" aria-expanded="false">
-                                Moneda: {monedaActiva}
+                                Moneda: {moneda}
                             </button>
                             <ul className="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg" aria-labelledby="dropdownDivisas">
-                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setMonedaActiva('CLP')}>Peso Chileno (CLP)</button></li>
-                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setMonedaActiva('UF')}>Unidad de Fomento (UF)</button></li>
-                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setMonedaActiva('EUR')}>Euro (€)</button></li>
-                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setMonedaActiva('UTM')}>Unidad Tributaria (UTM)</button></li>
+                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setmoneda('CLP')}>Peso Chileno (CLP)</button></li>
+                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setmoneda('UF')}>Unidad de Fomento (UF)</button></li>
+                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setmoneda('EUR')}>Euro (€)</button></li>
+                                <li><button className="dropdown-item small fw-semibold" type="button" onClick={() => setmoneda('UTM')}>Unidad Tributaria (UTM)</button></li>
                             </ul>
                         </li>
 

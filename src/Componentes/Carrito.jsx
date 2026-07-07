@@ -24,7 +24,7 @@ function Carrito({
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [correoLocal, setCorreoLocal] = useState('');
-    const [telefonoDigitos, setTelefonoDigitos] = useState('');
+    const [telefono, setTelefono] = useState('');
     const [metodoEntrega, setMetodoEntrega] = useState('retiro');
     const [metodoPago, setMetodoPago] = useState('tarjeta');
     const [aceptaTerminos, setAceptaTerminos] = useState(false);
@@ -128,11 +128,11 @@ function Carrito({
 
     // Comprobar teléfono al salir del input
     const checkTelefono = () => {
-        if (telefonoDigitos === '') {
+        if (telefono === '') {
             setErrorTelefono('');
             return;
         }
-        if (telefonoDigitos.length !== 8) {
+        if (telefono.length !== 8) {
             setErrorTelefono('El telefono debe tener 8 digitos');
         } else {
             setErrorTelefono('');
@@ -146,7 +146,7 @@ function Carrito({
 
     const cambiarFono = (e) => {
         const valor = e.target.value.replace(/[^0-9]/g, '');
-        setTelefonoDigitos(valor);
+        setTelefono(valor);
     };
 
     const Region = (e) => {
@@ -179,13 +179,13 @@ function Carrito({
         checkTelefono();
         checkEdad();
 
-        if (!errorRut && !errorCorreo && !errorTelefono && !errorEdad && rut && correoLocal && telefonoDigitos && fechaNacimiento && aceptaTerminos) {
+        if (!errorRut && !errorCorreo && !errorTelefono && !errorEdad && rut && correoLocal && telefono && fechaNacimiento && aceptaTerminos) {
             localStorage.setItem('puntos_Cyber', puntosEspaciales);
 
             onFinalizar({
                 nombreCompleto: `${nombre.trim()} ${apellido.trim()}`,
                 correo: correoLocal,
-                telefono: "+56 9 " + telefonoDigitos,
+                telefono: "+56 9 " + telefono,
                 rutValidado: rut,
                 metodoPago
             });
@@ -274,7 +274,7 @@ function Carrito({
                                     <label className="text-white d-block mb-1" style={{ fontSize: '11px' }}>Teléfono Móvil:</label>
                                     <div className="input-group input-group-sm">
                                         <span className="input-group-text bg-dark border-secondary text-white" style={{ fontSize: '12px' }}>+56 9</span>
-                                        <input type="tel" className="form-control bg-dark text-white border-secondary" placeholder="12345678" value={telefonoDigitos} onChange={cambiarFono} onBlur={checkTelefono} maxLength="8" required />
+                                        <input type="tel" className="form-control bg-dark text-white border-secondary" placeholder="12345678" value={telefono} onChange={cambiarFono} onBlur={checkTelefono} maxLength="8" required />
                                     </div>
                                     {errorTelefono && <small className="text-danger d-block mt-1 fw-medium" style={{ fontSize: '11px' }}>{errorTelefono}</small>}
                                 </div>
